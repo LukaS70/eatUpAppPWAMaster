@@ -1,0 +1,150 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/food/tabs/recipes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ recipe?.name }}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onUpdateRecipe()" color="secondary" [disabled]="!form?.valid || !recipeIngredients || recipeIngredients.length <= 0 || !checkAmounts() || !form.get('image').value">
+        <ion-icon name="checkbox" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-text-center ion-padding" *ngIf="isLoading">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+  <form [formGroup]="form" *ngIf="!isLoading && recipe && allIngredients.length > 0">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <!-- <ion-item>
+            <ion-label position="floating">ImageUrl</ion-label> 
+            <ion-input type="text" formControlName="image"></ion-input>
+          </ion-item> -->
+          <div class="picker" *ngIf="!showPicker">
+            <ion-img role="button" class="image" src="{{ recipe.image }}"></ion-img>
+          </div>
+          <app-image-picker (imagePick)="onImagePicked($event)" *ngIf="showPicker"></app-image-picker>
+        </ion-col>
+        <ion-col size="8" offset="2" size-lg="2" offset-lg="5" size-md="4" offset-md="4" size-sm="6" offset-sm="3">
+          <ion-button color="danger" fill="outline" *ngIf="!showPicker" expand="block" (click)="onChangeImage()" >
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input type="text" formControlName="name"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Category</ion-label>
+            <ion-select interface="alert" formControlName="category">
+              <ion-select-option value="chicken">Chicken</ion-select-option>
+              <ion-select-option value="fish">Fish</ion-select-option>
+              <ion-select-option value="pork">Pork</ion-select-option>
+              <ion-select-option value="beef">Beef</ion-select-option>
+              <ion-select-option value="salad">Salad</ion-select-option>
+              <ion-select-option value="pasta">Pasta</ion-select-option>
+              <ion-select-option value="vegetables">Vegetables</ion-select-option>
+              <ion-select-option value="desert">Desert</ion-select-option>
+              <ion-select-option value="soup">Soup</ion-select-option>
+              <ion-select-option value="other">Other</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Instructions</ion-label>
+            <ion-textarea rows="7" formControlName="instructions"></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Calories (calculated automatically)</ion-label>
+            <ion-input formControlName="calories" type="number" readonly></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="recipeIngredients && recipeIngredients.length > 0">
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-list>
+            <ion-label style="margin-left: 20px;">Ingredients:</ion-label>
+            <!-- <ion-item lines="full" *ngFor="let ingredient of recipeIngredients">
+              <ion-avatar slot="start">
+                <ion-img [src]="ingredient.image"></ion-img>
+              </ion-avatar>
+              <ion-label>
+                <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
+                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+              </ion-label>
+              <ion-input placeholder="Amount" type="number"></ion-input>
+              <ion-button color="danger" >
+                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item> -->
+            <ion-item lines="full" *ngFor="let ingredient of recipeIngredients">
+                <ion-avatar slot="start">
+                  <ion-img [src]="ingredient.image"></ion-img>
+                </ion-avatar>
+              <ion-col size="5">
+                <ion-label>
+                  <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
+                  <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+                </ion-label>
+              </ion-col>
+              <ion-col size="3">
+                <ion-input value="{{ingredient.amount}}" placeholder="amount" required type="number" class="input-box" style="text-align: center;"
+                name="amount" (ionChange)="amountEntered($event.detail.value, ingredient.id)"></ion-input>
+              </ion-col>
+              <ion-col size="2">
+                <p *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'"> {{ ingredient.measurementUnit | slice:3 }} </p>
+                <p *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'"> {{ ingredient.measurementUnit }} </p>
+              </ion-col>
+              <ion-col size="2">
+                <ion-buttons>
+                  <ion-button color="danger" (click)="removeFromRecipeIngredients(ingredient.id)">
+                    <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-col>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-searchbar #search placeholder="Search Ingredients to Add" showCancelButton="focus" color="secondary" animated inputmode="text" spellcheck="true" (ionChange)="onFindIngredients($event.target.value)"></ion-searchbar>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-list>
+            <ion-item lines="full" *ngFor="let ingredient of filteredIngredients">
+              <ion-avatar slot="start">
+                <ion-img [src]="ingredient.image"></ion-img>
+              </ion-avatar>
+              <ion-label>
+                <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
+                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+              </ion-label>
+              <ion-button color="secondary" (click)="addToRecipeIngredients(ingredient.id)">Add</ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

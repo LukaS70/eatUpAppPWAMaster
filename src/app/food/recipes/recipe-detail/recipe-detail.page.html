@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/food/tabs/recipes"></ion-back-button>
+    </ion-buttons>
+    <ion-title style="padding-left: 0px;">{{ recipe?.name }}</ion-title>
+    <ion-buttons slot="secondary" style="padding-left: 10px; padding-right: none; position: relative;">
+      <ion-button (click)="onEditRecipe()" color="primary">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+    <ion-button (click)="onDeleteRecipe()" color="danger">
+      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+    </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-text-center ion-padding" *ngIf="isLoading && (!ingredients || ingredients.length <= 0 || !recipe)">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+  <ion-grid *ngIf="!isLoading && ingredients && recipe" class="ion-no-padding">
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-img [src]=recipe.image></ion-img>
+      </ion-col>
+    </ion-row>
+    <ion-row style="margin-top: 15px;">
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-label style="font-size: larger; font-style: oblique; margin-left: 10%;">Instructions: </ion-label>
+        <h5 style="margin-left: 5%;">{{ recipe.instructions }}</h5>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-list>
+          <ion-label style="font-size: larger; font-style: oblique; margin-left: 10%;">Ingredients: </ion-label>
+          <ion-item lines="full" *ngFor="let ingredient of ingredients">
+            <ion-avatar slot="start">
+              <ion-img [src]="ingredient.image"></ion-img>
+            </ion-avatar>
+            <ion-label>
+              {{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}
+            </ion-label>
+            <ion-text *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'">
+              {{ ingredient.amount }} {{ ingredient.measurementUnit | slice:3 }} </ion-text>
+            <ion-text *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'">
+              {{ ingredient.amount }} {{ ingredient.measurementUnit }} </ion-text>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="6" size-lg="3" offset-lg="3" size-md="4" offset-md="2" size-sm="5" offset-sm="1">
+        <p style="font-size: large; font-style: oblique; margin-left: 10%;" class="ion-text-center box-bordered ">
+          Category: {{ recipe.category.toLowerCase().charAt(0).toUpperCase() + recipe.category.toLowerCase().slice(1) }}
+        </p>
+      </ion-col>
+      <ion-col size="6" size-lg="3" size-md="4" size-sm="5">
+        <p style="font-size: large; font-style: oblique; margin-right: 10%;" class="ion-text-center box-bordered ">
+          Calories: {{ recipe.calories }}kcal</p>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-button color="primary" expand="block" class="ion-padding" (click)="addToShoppingList()">Add Ingredients to Shopping List</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-button color="primary" fill="outline" expand="block" class="ion-padding" (click)="addCalories()">Add Calories to Todays Calorie Count</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

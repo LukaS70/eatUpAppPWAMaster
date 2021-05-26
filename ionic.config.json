@@ -1,0 +1,7 @@
+{
+  "name": "eatUpApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

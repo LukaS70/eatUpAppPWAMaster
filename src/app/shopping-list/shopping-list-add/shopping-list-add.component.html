@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>User Data</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-searchbar showCancelButton="focus" animated inputmode="text" spellcheck="true"
+          (ionChange)="onFilterIngredients($event.target.value)"></ion-searchbar>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col *ngIf="!isLoading && (!filteredIngredients || filteredIngredients.length <= 0)">
+        <p class="ion-text-center">No ingredients found!</p>
+      </ion-col>
+      <ion-col *ngIf="!isLoading && filteredIngredients && filteredIngredients.length > 0">
+        <ion-list>
+          <ion-item lines="full" *ngFor="let ingredient of filteredIngredients">
+            <ion-avatar slot="start">
+              <ion-img [src]="ingredient.image"></ion-img>
+            </ion-avatar>
+            <ion-col size="5">
+              <ion-label>
+                <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}
+                </h5>
+                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+              </ion-label>
+            </ion-col>
+            <ion-col size="3">
+              <ion-input value="{{ingredient.amount}}" placeholder="amount" required type="number" class="input-box"
+                style="text-align: center;" name="amount"
+                (ionChange)="amountEntered($event.detail.value, ingredient.id)" #amount></ion-input>
+            </ion-col>
+            <ion-col size="2">
+              <p *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'">
+                {{ ingredient.measurementUnit | slice:3 }} </p>
+              <p *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'">
+                {{ ingredient.measurementUnit }} </p>
+            </ion-col>
+            <ion-col size="2">
+              <ion-buttons>
+                <ion-button color="success" (click)="addToShoppingList(ingredient.id)" [disabled]="!amount || amount.value <= 0">
+                  <ion-icon name="add-circle" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-col>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

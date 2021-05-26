@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="m1"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Shopping List</ion-title>
+    <ion-buttons slot="primary" *ngIf="editMode">
+      <ion-button (click)="onEditShoppingList()" [disabled]="!slIngredients || slIngredients.length <= 0">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="ion-text-center ion-padding" *ngIf="isLoading">
+    <ion-spinner color="primary" name="bubbles"></ion-spinner>
+  </div>
+  <ion-grid>
+    <ion-row class="ion-text-center" *ngIf="!isLoading && ((!slItems || slItems.length <= 0))">
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <p>No ingredients in Shopping List!</p>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!isLoading && ((slIngredients && slIngredients.length > 0))">
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-list>
+          <ion-item lines="full" *ngFor="let element of slIngredients">
+            <ion-checkbox slot="start" *ngIf="!editMode" [(ngModel)]="element.isChecked"></ion-checkbox>
+            <ion-avatar slot="start">
+              <ion-img [src]="element.ingredient.image"></ion-img>
+            </ion-avatar>
+          <ion-col size="6">
+            <ion-label>
+              <h5>{{ element.ingredient.name.toLowerCase().charAt(0).toUpperCase() + element.ingredient.name.toLowerCase().slice(1) }}</h5>
+            </ion-label>
+          </ion-col>
+          <ion-col size="2" *ngIf="editMode">
+            <ion-buttons>
+              <ion-button color="danger" (click)="onRemoveIngredientFromShoppingList(element.ingredient.id)">
+                <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-col>
+          <ion-col size="3" *ngIf="editMode">
+            <ion-input value="{{element.ingredient.amount}}" placeholder="amount" required type="number" class="input-box" style="text-align: center;"
+            name="amount" (ionChange)="amountEdited($event.detail.value, element.ingredient.id)"></ion-input>
+          </ion-col>
+          <ion-col size="4" *ngIf="!editMode">
+            <ion-label style="text-align: right;">{{ element.ingredient.amount }}</ion-label>
+          </ion-col>
+          <ion-col size="2">
+            <p *ngIf="element.ingredient.measurementUnit==='100g' || element.ingredient.measurementUnit==='100ml'"> {{ element.ingredient.measurementUnit | slice:3 }} </p>
+            <p *ngIf="element.ingredient.measurementUnit!=='100g' && element.ingredient.measurementUnit!=='100ml'"> {{ element.ingredient.measurementUnit }} </p>
+          </ion-col>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-fab vertical="bottom" horizontal="end" style="position: fixed;">
+    <ion-fab-button>
+      <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button (click)="onRemoveCheckedFromShoppingList()" color="danger" [disabled]="!slIngredients || slIngredients.length <= 0 || editMode"><ion-icon name="remove-circle-outline"></ion-icon></ion-fab-button>
+      <ion-fab-button (click)="onEditShoppingList()" color="primary" [disabled]="!slIngredients || slIngredients.length <= 0"><ion-icon name="create-outline"></ion-icon></ion-fab-button>
+      <ion-fab-button (click)="onAddManuallyToShoppingList()" color="success" [disabled]="editMode"><ion-icon name="add-circle-outline"></ion-icon></ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

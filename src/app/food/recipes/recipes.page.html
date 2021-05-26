@@ -1,0 +1,72 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="m1"></ion-menu-button>
+    </ion-buttons>
+    <ion-searchbar placeholder="Search Recipes" animated inputmode="text" spellcheck="true"
+      (ionChange)="onFilterRecipes($event.target.value)" *ngIf="showSearchBar"></ion-searchbar>
+    <ion-title *ngIf="!showSearchBar">Recipes</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onToggleSearchBar()">
+        <ion-icon name="search-outline" *ngIf="!showSearchBar"></ion-icon>
+        <ion-icon name="close-circle-outline" *ngIf="showSearchBar"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onAddNewRecipe()" *ngIf="!showSearchBar">
+        <ion-icon name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-progress-bar type="indeterminate" *ngIf="isLoading"></ion-progress-bar>
+  <ion-segment value="all" (ionChange)="onFilterUpdate($event)" scrollable [(ngModel)]="selectedSegment" [disabled]='disableSegmentSearch'>
+    <ion-segment-button value="all">All</ion-segment-button>
+    <ion-segment-button value="myRecipes">My Recipes</ion-segment-button>
+    <ion-segment-button value="chicken">Chicken</ion-segment-button>
+    <ion-segment-button value="fish">Fish</ion-segment-button>
+    <ion-segment-button value="pork">Pork</ion-segment-button>
+    <ion-segment-button value="beef">Beef</ion-segment-button>
+    <ion-segment-button value="salad">Salad</ion-segment-button>
+    <ion-segment-button value="pasta">Pasta</ion-segment-button>
+    <ion-segment-button value="vegetables">Vegetables</ion-segment-button>
+    <ion-segment-button value="desert">Desert</ion-segment-button>
+    <ion-segment-button value="soup">Soup</ion-segment-button>
+    <ion-segment-button value="other">Other</ion-segment-button>
+  </ion-segment>
+  <ion-grid *ngIf="!isLoading && (!filteredRecipes || filteredRecipes.length <= 0)">
+    <ion-row class="ion-text-center">
+      <ion-col>
+        <p>No recipes found!</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid *ngIf="!isLoading && filteredRecipes.length > 0">
+    <ion-row>
+      <ion-col class="ion-text-center" size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <!-- <ion-virtual-scroll [items]="loadedRecipes" approxItemHeight="1120px">
+          <ion-card *virtualItem="let recipe"> -->
+        <ion-list>
+          <ion-card *ngFor="let recipe of filteredRecipes" style="margin-bottom: 25px;">
+            <ion-card-header>
+              <ion-card-title>
+                {{ recipe.name.toLowerCase().charAt(0).toUpperCase() + recipe.name.toLowerCase().slice(1)}}
+              </ion-card-title>
+              <ion-card-subtitle>Calories: {{ recipe.calories }}kcal</ion-card-subtitle>
+            </ion-card-header>
+            <div>
+              <ion-img [src]="recipe.image"></ion-img>
+            </div>
+            <div style="margin-bottom: 10px; margin-top: 15px;">
+              <ion-button fill="outline" color="primary" (click)="addToShoppingList(recipe.id)">To Cart</ion-button>
+              <ion-button color="primary" (click)="addCalories(recipe.id)">Eaten!</ion-button>
+              <ion-button fill="clear" color="primary" [routerLink]="['/', 'food', 'tabs', 'recipes', recipe.id]">More
+              </ion-button>
+            </div>
+          </ion-card>
+        </ion-list>
+        <!-- </ion-virtual-scroll> -->
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

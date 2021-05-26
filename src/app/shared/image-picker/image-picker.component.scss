@@ -1,0 +1,21 @@
+.picker {
+    width: 30rem;
+    max-width: 90%;
+    height: 20rem;
+    max-height: 30vh;
+    border: 1px solid var(--ion-color-primary);
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+input[type='file'] {    // da bude nevidljiv korisniku, negod a mi kliknemo umesto njega
+    display: none;
+}

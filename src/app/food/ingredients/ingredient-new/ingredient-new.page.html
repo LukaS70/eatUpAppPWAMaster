@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/food/tabs/ingredients"></ion-back-button>
+    </ion-buttons>
+    <ion-title>New Ingredient</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onAddIngredient()" color="secondary" [disabled]="!form.valid || !form.get('image').value">
+        <ion-icon name="checkbox" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input type="text" formControlName="name"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Measurement Unit</ion-label>
+            <ion-select interface="popover" formControlName="measurementUnit" #selectUnit>
+              <ion-select-option value="100ml">ml (mililiters)</ion-select-option>
+              <ion-select-option value="100g">g (grams)</ion-select-option>
+              <ion-select-option value="tsp">tsp (teaspoons)</ion-select-option>
+              <ion-select-option value="Tbsp">Tbsp (tablespoons)</ion-select-option>
+              <ion-select-option value="cup">cup</ion-select-option>
+              <ion-select-option value="pinch">pinch</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Calories / {{ selectUnit.value }} </ion-label>
+            <ion-input type="number" formControlName="calories"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <!-- <ion-item>
+            <ion-label position="floating">ImageUrl</ion-label>
+            <ion-input type="text" formControlName="image"></ion-input>
+          </ion-item> -->
+          <app-image-picker (imagePick)="onImagePicked($event)"></app-image-picker>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

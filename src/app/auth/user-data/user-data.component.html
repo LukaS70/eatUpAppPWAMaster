@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>User Data</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="onConfirmUserData()" #f="ngForm">
+    <ion-grid>
+      <ion-list>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">First Name</ion-label>
+              <ion-input type="text" ngModel name="first-name" required></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">Last Name</ion-label>
+              <ion-input type="text" ngModel name="last-name" required></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-radio-group [(ngModel)]="gender" required name="user-gender" (ionChange)="calculateCalories()">
+          <ion-row>
+            <ion-col size-md="3" offset-md="3">
+              <ion-item>
+                <ion-label>Male</ion-label>
+                <ion-radio value="male" lines="none"></ion-radio>
+              </ion-item>
+            </ion-col>
+            <ion-col size-md="3">
+              <ion-item>
+                <ion-label>Female</ion-label>
+                <ion-radio value="female"></ion-radio>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-radio-group>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">Date of Birth</ion-label>
+              <ion-datetime display-format="MMM DD YYYY" picker-format="MMM DD YYYY" name="date-of-birth" required
+                [(ngModel)]="date" (ngModelChange)="calculateCalories()"></ion-datetime>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col  size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">Weight (kg)</ion-label>
+              <ion-input type="number" [(ngModel)]="weight" name="user-weight" required min="10"
+                (ngModelChange)="calculateCalories()"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">Height (cm)</ion-label>
+              <ion-input type="number" [(ngModel)]="height" name="user-height" required min="50"
+                (ngModelChange)="calculateCalories()"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-md="6" offset-md="3">
+            <ion-item>
+              <ion-label position="floating">Max Daily Calories (kcal)</ion-label>
+              <ion-input type="number" ngModel name="max-calories" required min="1"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="suggestedCalories">
+          <ion-col size-md="6" offset-md="3">
+            <ion-label style="font-size: small; font-family: monospace; margin-right: 10px;">Suggested calorie intake: {{ suggestedCalories }} kcal</ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size-sm="md" offset-md="3">
+            <ion-button type="submit" color="primary" expand="block" [disabled]="!f.valid" style="margin-top: 15px;">Save Data</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-list>
+    </ion-grid>
+  </form>
+</ion-content>
