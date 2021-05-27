@@ -88,13 +88,13 @@ export class RecipesPage implements OnInit, OnDestroy {
               message: 'Adding...'
             }).then(loadingEl => {
               loadingEl.present();
-              const ingredients = this.loadedRecipes.find(rec => rec.id === recipeId).ingredientsForRecipe;
+              const ingredients = this.loadedRecipes.find(rec => rec.id === recipeId).ingredients;
               const ingForSl: { amount: number, ingredientsId: string, checked: boolean }[] = [];
               // tslint:disable-next-line:prefer-for-of
               for (let index = 0; index < ingredients.length; index++) {
                 ingForSl.push({
                   amount: ingredients[index].amount,
-                  ingredientsId: ingredients[index].ingredientsId,
+                  ingredientsId: ingredients[index].ingredientId,
                   checked: false
                 });
               }

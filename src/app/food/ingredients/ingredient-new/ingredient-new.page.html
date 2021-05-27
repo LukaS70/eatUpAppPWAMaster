@@ -26,14 +26,14 @@
       <ion-row>
         <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
           <ion-item>
-            <ion-label position="floating">Measurement Unit</ion-label>
-            <ion-select interface="popover" formControlName="measurementUnit" #selectUnit>
-              <ion-select-option value="100ml">ml (mililiters)</ion-select-option>
-              <ion-select-option value="100g">g (grams)</ion-select-option>
-              <ion-select-option value="tsp">tsp (teaspoons)</ion-select-option>
-              <ion-select-option value="Tbsp">Tbsp (tablespoons)</ion-select-option>
-              <ion-select-option value="cup">cup</ion-select-option>
-              <ion-select-option value="pinch">pinch</ion-select-option>
+            <ion-label position="floating">Category</ion-label>
+            <ion-select interface="popover" formControlName="category">
+              <ion-select-option value="605f7f51a2d8979ad183abdf">Grains and Seeds</ion-select-option>
+              <ion-select-option value="605f7f73a2d8979ad183abe0">Herbs and Spices</ion-select-option>
+              <ion-select-option value="605f7f91a2d8979ad183abe1">Meat, Poultry and Seafood</ion-select-option>
+              <ion-select-option value="605f7fb6a2d8979ad183abe2">Dairy</ion-select-option>
+              <ion-select-option value="605f7fc5a2d8979ad183abe3">Fruits</ion-select-option>
+              <ion-select-option value="605f7fd3a2d8979ad183abe4">Vegetables</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-col>
@@ -41,8 +41,61 @@
       <ion-row>
         <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
           <ion-item>
-            <ion-label position="floating">Calories / {{ selectUnit.value }} </ion-label>
+            <ion-label position="floating">Measurement Unit</ion-label>
+            <ion-select interface="popover" formControlName="measurementUnit" #selectUnit>
+              <ion-select-option value="605f8041a2d8979ad183abe7">ml (per 100 mililiters)</ion-select-option>
+              <ion-select-option value="605f802aa2d8979ad183abe6">g (per 100 grams)</ion-select-option>
+              <ion-select-option value="605f8058a2d8979ad183abe8">oz (per ounce)</ion-select-option>
+              <ion-select-option value="605f8072a2d8979ad183abe9">lb (per pund)</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Calories<!--  / {{ selectUnit.value }}  --></ion-label>
             <ion-input type="number" formControlName="calories"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Total Fats<!--  / {{ selectUnit.value }}  --></ion-label>
+            <ion-input type="number" formControlName="totalFats"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Saturated Fats<!--  / {{ selectUnit.value }}  --></ion-label>
+            <ion-input type="number" formControlName="saturatedFats"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Total Carbohydrates<!--  / {{ selectUnit.value }}  --></ion-label>
+            <ion-input type="number" formControlName="totalCarbohydrates"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Sugar<!--  / {{ selectUnit.value }}  --></ion-label>
+            <ion-input type="number" formControlName="sugar"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating">Proteine<!--  / {{ selectUnit.value }}  --></ion-label>
+            <ion-input type="number" formControlName="proteine"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>

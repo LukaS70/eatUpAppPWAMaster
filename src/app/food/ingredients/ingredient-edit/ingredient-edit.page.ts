@@ -1,3 +1,4 @@
+import { Nutrition } from './../../../shared/nutrition.modal';
 import { IngredientsService } from './../ingredients.service';
 import { Subscription } from 'rxjs';
 import { Component, OnInit, OnDestroy } from '@angular/core';
@@ -51,11 +52,35 @@ export class IngredientEditPage implements OnInit, OnDestroy {
             updateOn: 'blur',
             validators: [Validators.required]
           }),
-          measurementUnit: new FormControl(this.ingredient.measurementUnit, {
+          category: new FormControl(this.ingredient.category['id'], {
             updateOn: 'blur',
             validators: [Validators.required]
           }),
-          calories: new FormControl(this.ingredient.calories, {
+          measurementUnit: new FormControl(this.ingredient.measurementUnit['id'], {
+            updateOn: 'blur',
+            validators: [Validators.required]
+          }),
+          calories: new FormControl(this.ingredient.nutrition.calories, {
+            updateOn: 'blur',
+            validators: [Validators.required, Validators.min(0)]
+          }),
+          totalFats: new FormControl(this.ingredient.nutrition.totalFats, {
+            updateOn: 'blur',
+            validators: [Validators.required, Validators.min(0)]
+          }),
+          saturatedFats: new FormControl(this.ingredient.nutrition.saturatedFats, {
+            updateOn: 'blur',
+            validators: [Validators.required, Validators.min(0)]
+          }),
+          totalCarbohydrates: new FormControl(this.ingredient.nutrition.totalCarbohydrates, {
+            updateOn: 'blur',
+            validators: [Validators.required, Validators.min(0)]
+          }),
+          sugar: new FormControl(this.ingredient.nutrition.sugar, {
+            updateOn: 'blur',
+            validators: [Validators.required, Validators.min(0)]
+          }),
+          proteine: new FormControl(this.ingredient.nutrition.proteine, {
             updateOn: 'blur',
             validators: [Validators.required, Validators.min(0)]
           }),
@@ -75,11 +100,19 @@ export class IngredientEditPage implements OnInit, OnDestroy {
     });
   }
 
-  onUpdateIngredient() {
+  onUpdateIngredient() {    //change
     if (!this.form.valid || !this.form.get('image').value) {
       return;
     }
     console.log(this.form.value);
+    const nutrition = new Nutrition(
+      this.form.value.calories,
+      this.form.value.totalFats,
+      this.form.value.saturatedFats,
+      this.form.value.totalCarbohydrates,
+      this.form.value.sugar,
+      this.form.value.proteine
+    );
     this.alertCtrl.create({
       header: 'Edit Ingredient?',
       message: 'Do you want to save changes made to this ingredient?',
@@ -100,9 +133,11 @@ export class IngredientEditPage implements OnInit, OnDestroy {
                 this.ingredientsService.updateIngredient(
                   this.ingredient.id,
                   this.form.value.name,
-                  this.form.value.calories,
+                  this.ingredient.image,
+                  nutrition,
+                  false,
                   this.form.value.measurementUnit,
-                  this.ingredient.image
+                  this.form.value.category
                 ).subscribe(() => {
                   loadingEl.dismiss();
                   this.form.reset();
@@ -128,9 +163,11 @@ export class IngredientEditPage implements OnInit, OnDestroy {
                       return this.ingredientsService.updateIngredient(
                         this.ingredient.id,
                         formData.name,
-                        formData.calories,
+                        url,
+                        nutrition,
+                        false,
                         formData.measurementUnit,
-                        url
+                        formData.category
                       );
                     })).subscribe();
                   })).subscribe(() => {

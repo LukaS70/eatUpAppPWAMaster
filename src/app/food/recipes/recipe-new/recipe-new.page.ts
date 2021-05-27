@@ -144,12 +144,12 @@ export class RecipeNewPage implements OnInit, OnDestroy {
             }).then(loadingEl => {
               loadingEl.present();
               // tslint:disable-next-line:prefer-const
-              let ingsForRecipe: { ingredientsId: string, amount: number }[] = [];
+              let ingsForRecipe: { ingredientId: string, amount: number }[] = [];
               // tslint:disable-next-line:prefer-for-of
               for (let index = 0; index < this.recipeIngredients.length; index++) {
                 const ingId = this.recipeIngredients[index].id;
                 const ingAmount = this.recipeIngredients[index].amount;
-                ingsForRecipe.push({ ingredientsId: ingId, amount: +ingAmount });
+                ingsForRecipe.push({ ingredientId: ingId, amount: +ingAmount });
               }
 
               const formData = this.form.value;
@@ -162,27 +162,28 @@ export class RecipeNewPage implements OnInit, OnDestroy {
                   fileRef.getDownloadURL().pipe(take(1), switchMap(url => {
                     return this.recipesService.addRecipes(
                       formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
+                      'instructions',
+                      'image',
                       ingsForRecipe,
                       formData.calories,
-                      url,
-                      formData.category,
-                      formData.instructions
+                      true,
+                      formData.category
                     );
                   })).subscribe();
                 })).subscribe(() => {
-                loadingEl.dismiss();
-                this.form.reset();
-                this.recipeIngredients = [];
-                this.search.value = '';
-                this.router.navigate(['/food/tabs/recipes']);
-                this.toastCtrl.create({
-                  message: 'Recipe added successfully!',
-                  duration: 2000,
-                  cssClass: 'toastClass'
-                }).then(toastEl => {
-                  toastEl.present();
+                  loadingEl.dismiss();
+                  this.form.reset();
+                  this.recipeIngredients = [];
+                  this.search.value = '';
+                  this.router.navigate(['/food/tabs/recipes']);
+                  this.toastCtrl.create({
+                    message: 'Recipe added successfully!',
+                    duration: 2000,
+                    cssClass: 'toastClass'
+                  }).then(toastEl => {
+                    toastEl.present();
+                  });
                 });
-              });
 
               /* this.recipesService.addRecipes(
                 this.form.value.name.toLowerCase().charAt(0).toUpperCase() + this.form.value.name.toLowerCase().slice(1),
@@ -232,9 +233,9 @@ export class RecipeNewPage implements OnInit, OnDestroy {
         continue;
       } else {
         if (this.recipeIngredients[index].measurementUnit === '100g' || this.recipeIngredients[index].measurementUnit === '100ml') {
-          kcal += (this.recipeIngredients[index].calories / 100) * this.recipeIngredients[index].amount;
+          kcal += (this.recipeIngredients[index].nutrition.calories / 100) * this.recipeIngredients[index].amount;
         } else {
-          kcal += this.recipeIngredients[index].calories * this.recipeIngredients[index].amount;
+          kcal += this.recipeIngredients[index].nutrition.calories * this.recipeIngredients[index].amount;
         }
       }
     }
@@ -250,7 +251,7 @@ export class RecipeNewPage implements OnInit, OnDestroy {
     if (typeof imageData === 'string') {
       try {
         imageFile = this.imgService
-        .base64toBlob(imageData.replace('data:image/jpeg;base64,', ''), 'image/jpeg');  // ako je string,pretvaramo u file
+          .base64toBlob(imageData.replace('data:image/jpeg;base64,', ''), 'image/jpeg');  // ako je string,pretvaramo u file
       } catch (error) {
         console.log(error);
         return;

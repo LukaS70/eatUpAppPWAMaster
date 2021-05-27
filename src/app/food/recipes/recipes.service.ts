@@ -1,3 +1,4 @@
+import { Nutrition } from './../../shared/nutrition.modal';
 import { take, map, tap, switchMap } from 'rxjs/operators';
 import { AuthService } from './../../auth/auth.service';
 import { Injectable } from '@angular/core';
@@ -6,13 +7,16 @@ import { Recipe } from './recipe.model';
 import { HttpClient } from '@angular/common/http';
 
 interface RecipeData {
+  id: string;
   name: string;
-  ingredientsForRecipe: {ingredientsId: string, amount: number}[];
-  calories: number;
-  image: string;
-  category: string;
   instructions: string;
-  userId: string;
+  image: string;
+  ingredients: { ingredientId: string, amount: number }[];
+  nutrition: Nutrition;
+  reviewRequested: boolean;
+  public: boolean;
+  category: string;
+  creator: string;
 }
 @Injectable({
   providedIn: 'root'
@@ -27,20 +31,22 @@ export class RecipesService {
   constructor(private authService: AuthService, private http: HttpClient) { }
 
   fetchRecipes() {
-    return this.http.get<{ [key: string]: RecipeData }>('https://eatupappproject.firebaseio.com/recipes.json')
+    return this.http.get<{ [key: string]: RecipeData }>('http://localhost:5000/api/recipes')
       .pipe(take(1), map(recipeData => {
         const rec = [];
-        for (const key in recipeData) {
-          if (recipeData.hasOwnProperty(key)) {
+        for (const key in recipeData.recipes) {
+          if (recipeData.recipes.hasOwnProperty(key)) {
             rec.push(new Recipe(
-              key,
-              recipeData[key].name,
-              recipeData[key].ingredientsForRecipe,
-              recipeData[key].calories,
-              recipeData[key].image,
-              recipeData[key].category,
-              recipeData[key].instructions,
-              recipeData[key].userId
+              recipeData.recipes[key].id,
+              recipeData.recipes[key].name,
+              recipeData.recipes[key].instructions,
+              recipeData.recipes[key].image,
+              recipeData.recipes[key].ingredients,
+              recipeData.recipes[key].nutrition,
+              recipeData.recipes[key].reviewRequested,
+              recipeData.recipes[key].public,
+              recipeData.recipes[key].category,
+              recipeData.recipes[key].creator
             ));
           }
         }
@@ -51,69 +57,55 @@ export class RecipesService {
   }
 
   getRecipe(id: string) {
-    let fetchedUserId;
-    return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      return this.http.get<RecipeData>(`https://eatupappproject.firebaseio.com/recipes/${id}.json`)
-        .pipe(take(1), map(recipeData => {
-          return new Recipe(
-            id,
-            recipeData.name,
-            recipeData.ingredientsForRecipe,
-            recipeData.calories,
-            recipeData.image,
-            recipeData.category,
-            recipeData.instructions,
-            fetchedUserId
-          );
-        }));
-    }));
+    return this.http.get<RecipeData>(`http://localhost:5000/api/recipes/${id}`)
+      .pipe(take(1), map(recipeData => {
+        return new Recipe(
+          recipeData.id,
+          recipeData.name,
+          recipeData.instructions,
+          recipeData.image,
+          recipeData.ingredients,
+          recipeData.nutrition,
+          recipeData.reviewRequested,
+          recipeData.public,
+          recipeData.category,
+          recipeData.creator
+        );
+      }));
   }
 
   addRecipes(
     name: string,
-    ingredientsForRecipe: {ingredientsId: string, amount: number}[],
-    calories: number,
+    instructions: string,
     image: string,
-    category: string,
-    instructions: string
+    ingredients: { ingredientId: string, amount: number }[],
+    nutrition: Nutrition,
+    reviewRequested: boolean,
+    category: string
   ) {
-    let generatedId: string;
-    let fetchedUserId: string;
-    let newRecipe: Recipe;
-    return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      newRecipe = new Recipe(
-        Math.random().toString(),
-        name,
-        ingredientsForRecipe,
-        calories,
-        image,
-        category,
-        instructions,
-        fetchedUserId
-      );
-      return this.http.post<{ name: string }>('https://eatupappproject.firebaseio.com/recipes.json',
-        { ...newRecipe, id: null });
-    }), switchMap(resData => {
-      generatedId = resData.name;
-      return this.recipes;
-    }), take(1), tap(rec => {
-      newRecipe.id = generatedId;
-      this.appRecipes.next(rec.concat(newRecipe));
-    }));
+    return this.http.post<{}>(`http://localhost:5000/api/recipes`,
+      {
+        name: name,
+        instructions: instructions,
+        image: image,
+        ingredients: ingredients,
+        nutrition: nutrition,
+        reviewRequested: reviewRequested,
+        category: category
+      }
+    ).pipe(take(1), tap(this.fetchRecipes));  // change ???
   }
 
-  updateRecipe(
+  updateRecipe(   //change
     recipeId: string,
     name: string,
-    ingredientsForRecipe: {ingredientsId: string, amount: number}[],
+    ingredientsForRecipe: { ingredientsId: string, amount: number }[],
     calories: number,
     image: string,
     category: string,
     instructions: string
   ) {
-    let updatedRecipes: Recipe[];
+    /* let updatedRecipes: Recipe[];
     let fetchedUserId;
     return this.authService.user.pipe(take(1), switchMap(user => {
       fetchedUserId = user.id;
@@ -144,7 +136,7 @@ export class RecipesService {
       }), tap(() => {
         this.appRecipes.next(updatedRecipes);
       }));
-    }));
+    })); */
   }
 
   deleteRecipe(id: string) {

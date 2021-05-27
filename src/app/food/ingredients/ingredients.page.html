@@ -33,7 +33,7 @@
               </ion-avatar>
               <ion-label>
                 <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
-                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+                <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit.perName }}</p>
               </ion-label>
               <ion-icon name="reorder-four-outline" position="end"></ion-icon>
             </ion-item>

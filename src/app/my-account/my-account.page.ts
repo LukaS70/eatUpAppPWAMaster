@@ -113,91 +113,91 @@ export class MyAccountPage implements OnInit, OnDestroy {
   ionViewWillEnter() { // bilo je didEnter, ovako deluje da bolje radi
     this.isLoading = true;
     setTimeout(() => {
-    this.authSub = this.authService.user.subscribe((activeUser) => {
-      if (!activeUser) {
-        return;
-      }
-      this.user = activeUser;
-      this.editedUser = new User(
-        this.user.id,
-        this.user.email,
-        this.user.firstName,
-        this.user.lastName,
-        this.user.gender,
-        this.user.dateOfBirth,
-        this.user.weight,
-        this.user.height,
-        this.user.maxCalories,
-        this.user.dailyNutrition,
-        this.user.shoppingList,
-        this.user.userToken,
-        this.user.tokenExpirationDate
-      );
-      this.date = new Date(this.editedUser.dateOfBirth).toISOString();
-      this.calculateCalories();
-      /* if (
-        !activeUser.dateOfBirth ||
-        !activeUser.firstName ||
-        !activeUser.gender ||
-        !activeUser.height ||
-        !activeUser.lastName ||
-        !activeUser.maxCalories ||
-        !activeUser.weight
-      ) {
-        this.modalCtrl
-          .create({ component: UserDataComponent })
-          .then((modalEl) => {
-            modalEl.present();
-            return modalEl.onDidDismiss();
-          })
-          .then((resultData) => {
-            if (resultData.role === 'confirm') {
-              this.loadingCtrl
-                .create({
-                  keyboardClose: true,
-                  message: 'Saving user data...',
-                })
-                .then((loadingEl) => {
-                  loadingEl.present();
-                  const data = resultData.data.userData;
-                  this.authService
-                    .postUserData(
-                      data.firstName,
-                      data.lastName,
-                      data.gender,
-                      data.dateOfBirth,
-                      data.weight,
-                      data.height,
-                      data.maxCalories
-                    ).subscribe(() => {
-                      this.user.firstName = data.firstName;
-                      this.user.lastName = data.lastName;
-                      this.user.gender = data.gender;
-                      this.user.dateOfBirth = data.dateOfBirth;
-                      this.user.weight = data.weight;
-                      this.user.height = data.height;
-                      this.user.maxCalories = data.maxCalories;
-                      loadingEl.dismiss();
-                      this.toastCtrl.create({
-                        message: 'Data saved!',
-                        duration: 2000,
-                        cssClass: 'toastClass'
-                      }).then(toastEl => {
-                        toastEl.present();
+      this.authSub = this.authService.user.subscribe((activeUser) => {
+        if (!activeUser) {
+          return;
+        }
+        this.user = activeUser;
+        this.editedUser = new User(
+          this.user.id,
+          this.user.email,
+          this.user.firstName,
+          this.user.lastName,
+          this.user.gender,
+          this.user.dateOfBirth,
+          this.user.weight,
+          this.user.height,
+          this.user.maxCalories,
+          this.user.dailyNutrition,
+          this.user.shoppingList,
+          this.user.userToken,
+          this.user.tokenExpirationDate
+        );
+        this.date = new Date(this.editedUser.dateOfBirth).toISOString();
+        this.calculateCalories();
+        /* if (
+          !activeUser.dateOfBirth ||
+          !activeUser.firstName ||
+          !activeUser.gender ||
+          !activeUser.height ||
+          !activeUser.lastName ||
+          !activeUser.maxCalories ||
+          !activeUser.weight
+        ) {
+          this.modalCtrl
+            .create({ component: UserDataComponent })
+            .then((modalEl) => {
+              modalEl.present();
+              return modalEl.onDidDismiss();
+            })
+            .then((resultData) => {
+              if (resultData.role === 'confirm') {
+                this.loadingCtrl
+                  .create({
+                    keyboardClose: true,
+                    message: 'Saving user data...',
+                  })
+                  .then((loadingEl) => {
+                    loadingEl.present();
+                    const data = resultData.data.userData;
+                    this.authService
+                      .postUserData(
+                        data.firstName,
+                        data.lastName,
+                        data.gender,
+                        data.dateOfBirth,
+                        data.weight,
+                        data.height,
+                        data.maxCalories
+                      ).subscribe(() => {
+                        this.user.firstName = data.firstName;
+                        this.user.lastName = data.lastName;
+                        this.user.gender = data.gender;
+                        this.user.dateOfBirth = data.dateOfBirth;
+                        this.user.weight = data.weight;
+                        this.user.height = data.height;
+                        this.user.maxCalories = data.maxCalories;
+                        loadingEl.dismiss();
+                        this.toastCtrl.create({
+                          message: 'Data saved!',
+                          duration: 2000,
+                          cssClass: 'toastClass'
+                        }).then(toastEl => {
+                          toastEl.present();
+                        });
                       });
-                    });
-                });
-            } else {
-              this.router.navigateByUrl('/food/tabs/recipes');
-            }
-            this.setChartData();
-            this.isLoading = false;
-          });
-      } else { */
+                  });
+              } else {
+                this.router.navigateByUrl('/food/tabs/recipes');
+              }
+              this.setChartData();
+              this.isLoading = false;
+            });
+        } else { */
         this.setChartData();
         this.isLoading = false;
-      /* } */
-    });
+        /* } */
+      });
     }, 1000);
   }
 
@@ -452,7 +452,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
     };
   }
 
-  /* onAddCalories() {    // change
+  onAddCalories() {    // change
+    /*
     const calorieDay: DailyNutrition = new DailyNutrition(null, null);
     let dailyNutrition: DailyNutrition[] = [];
     this.alertCtrl.create({
@@ -530,17 +531,17 @@ export class MyAccountPage implements OnInit, OnDestroy {
     });
   } */
 
-  /* calculateCalories() {
-    const dateOfBirth = new Date(this.form.value.dateOfBirth);
-    const ageDifMs = new Date().getTime() - dateOfBirth.getTime();
-    const ageDate = new Date(ageDifMs);
-    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-    if (this.form.value.gender === 'male') {
-      this.suggestedCalories = Math.round(66.47 + (13.75 * this.form.value.weight) + (5.0 * this.form.value.height - (6.75 * age)));
-    } else if (this.form.value.gender === 'female') {
-      this.suggestedCalories = Math.round(665.09 + (9.56 * this.form.value.weight) + (1.84 * this.form.value.height - (4.67 * age)));
-    }
-  } */
+    /* calculateCalories() {
+      const dateOfBirth = new Date(this.form.value.dateOfBirth);
+      const ageDifMs = new Date().getTime() - dateOfBirth.getTime();
+      const ageDate = new Date(ageDifMs);
+      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      if (this.form.value.gender === 'male') {
+        this.suggestedCalories = Math.round(66.47 + (13.75 * this.form.value.weight) + (5.0 * this.form.value.height - (6.75 * age)));
+      } else if (this.form.value.gender === 'female') {
+        this.suggestedCalories = Math.round(665.09 + (9.56 * this.form.value.weight) + (1.84 * this.form.value.height - (4.67 * age)));
+      }*/
+  }
 
   ionViewWillLeave() {
     if (this.editMode) {

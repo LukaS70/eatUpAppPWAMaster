@@ -145,7 +145,7 @@ export class AuthService implements OnDestroy {
 
   getUserData(id: string, email: string, token: string, tokenExpirationDate: Date) {
     let user: User;
-    return this.http.get<{ [key: string]: UserData }>(`http://localhost:5000/api/users/${id}`, { headers: { 'Authorization': `Bearer ${token}` } })
+    return this.http.get<{ [key: string]: UserData }>(`http://localhost:5000/api/users/${id}`)
       .pipe(map(usersData => {
         if (usersData) {
           console.log(usersData);

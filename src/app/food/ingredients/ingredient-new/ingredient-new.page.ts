@@ -1,3 +1,4 @@
+import { Nutrition } from './../../../shared/nutrition.modal';
 import { IngredientsService } from './../ingredients.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -31,11 +32,35 @@ export class IngredientNewPage implements OnInit {
         updateOn: 'blur',
         validators: [Validators.required]
       }),
+      category: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required]
+      }),
       measurementUnit: new FormControl(null, {
         updateOn: 'blur',
         validators: [Validators.required]
       }),
       calories: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(0)]
+      }),
+      totalFats: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(0)]
+      }),
+      saturatedFats: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(0)]
+      }),
+      totalCarbohydrates: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(0)]
+      }),
+      sugar: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(0)]
+      }),
+      proteine: new FormControl(null, {
         updateOn: 'blur',
         validators: [Validators.required, Validators.min(0)]
       }),
@@ -73,11 +98,22 @@ export class IngredientNewPage implements OnInit {
               this.storage.upload(filePath, this.form.get('image').value).snapshotChanges().pipe(
                 finalize(() => { // ovo se poziva samo kada je upload zavrsen
                   fileRef.getDownloadURL().pipe(take(1), switchMap(url => {
+                    const nutrition = new Nutrition(
+                      formData.calories,
+                      formData.totalFats,
+                      formData.saturatedFats,
+                      formData.totalCarbohydrates,
+                      formData.sugar,
+                      formData.proteine
+                    );
+                    console.log(nutrition);
                     return this.ingredientsService.addIngredients(
                       formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
-                      formData.calories,
+                      url,
+                      nutrition,
+                      false,  // change
                       formData.measurementUnit,
-                      url
+                      formData.category,
                     );
                   })).subscribe();
                 })).subscribe(() => {
@@ -88,28 +124,10 @@ export class IngredientNewPage implements OnInit {
                     message: 'Ingredient added successfully!',
                     duration: 2000,
                     cssClass: 'toastClass'
-                }).then(toastEl => {
-                  toastEl.present();
+                  }).then(toastEl => {
+                    toastEl.present();
+                  });
                 });
-              });
-
-              /* this.ingredientsService.addIngredients(
-                this.form.value.name.toLowerCase().charAt(0).toUpperCase() + this.form.value.name.toLowerCase().slice(1),
-                this.form.value.calories,
-                this.form.value.measurementUnit,
-                this.form.value.image
-              ).subscribe(() => {
-                loadingEl.dismiss();
-                this.form.reset();
-                this.router.navigate(['/food/tabs/ingredients']);
-                this.toastCtrl.create({
-                  message: 'Ingredient added successfully!',
-                  duration: 2000,
-                  cssClass: 'toastClass'
-                }).then(toastEl => {
-                  toastEl.present();
-                });
-              }); */
             });
           }
         }
@@ -124,7 +142,7 @@ export class IngredientNewPage implements OnInit {
     if (typeof imageData === 'string') {
       try {
         imageFile = this.imgService
-        .base64toBlob(imageData.replace('data:image/jpeg;base64,', ''), 'image/jpeg');
+          .base64toBlob(imageData.replace('data:image/jpeg;base64,', ''), 'image/jpeg');
       } catch (error) {
         // alert
         return;

@@ -50,11 +50,11 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
       this.recSub = this.recipesService.getRecipe(paramMap.get('recipeId')).subscribe(rec => {
         this.recipe = rec;
         // tslint:disable-next-line:prefer-for-of
-        for (let index = 0; index < rec.ingredientsForRecipe.length; index++) {
-          const element = rec.ingredientsForRecipe[index];
-          this.ingSub = this.ingredientsService.getIngredient(rec.ingredientsForRecipe[index].ingredientsId)
+        for (let index = 0; index < rec.ingredients.length; index++) {
+          const element = rec.ingredients[index];
+          this.ingSub = this.ingredientsService.getIngredient(rec.ingredients[index].ingredientId)
             .pipe(take(1)).subscribe(ing => {
-              ing.amount = rec.ingredientsForRecipe[index].amount;
+              ing.amount = rec.ingredients[index].amount;
               this.ingredients.push(ing);
             });
         }

@@ -59,11 +59,11 @@ export class RecipeEditPage implements OnInit, OnDestroy {
           this.recipe = rec;
           const ingreds: Ingredient[] = [];
           // tslint:disable-next-line:prefer-for-of
-          for (let index = 0; index < rec.ingredientsForRecipe.length; index++) {
-            const element = rec.ingredientsForRecipe[index];
-            this.ingSub2 = this.ingredientsService.getIngredient(rec.ingredientsForRecipe[index].ingredientsId)
+          for (let index = 0; index < rec.ingredients.length; index++) {
+            const element = rec.ingredients[index];
+            this.ingSub2 = this.ingredientsService.getIngredient(rec.ingredients[index].ingredientId)
               .pipe(take(1)).subscribe(ing => {
-                ing.amount = rec.ingredientsForRecipe[index].amount;
+                ing.amount = rec.ingredients[index].amount;
                 ingreds.push(ing);
               });
           }
@@ -83,7 +83,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
               updateOn: 'blur',
               validators: [Validators.required]
             }),
-            calories: new FormControl(rec.calories, {
+            calories: new FormControl(rec.nutrition.calories, {
               updateOn: 'blur',
               validators: [Validators.required, Validators.min(0)]
             })
@@ -196,9 +196,9 @@ export class RecipeEditPage implements OnInit, OnDestroy {
     this.calculateCalories();
   }
 
-  onUpdateRecipe() {
+  onUpdateRecipe() {      //change
     // tslint:disable-next-line:prefer-for-of
-    for (let index = 0; index < this.recipeIngredients.length; index++) {
+    /* for (let index = 0; index < this.recipeIngredients.length; index++) {
       if (!this.recipeIngredients[index].amount || this.recipeIngredients[index].amount === 0) {
         this.alertCtrl.create({
           header: 'No amount entered!',
@@ -307,7 +307,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
       ]
     }).then(alertEl => {
       alertEl.present();
-    });
+    }); */
   }
 
   checkAmounts() {
@@ -328,9 +328,9 @@ export class RecipeEditPage implements OnInit, OnDestroy {
         continue;
       } else {
         if (this.recipeIngredients[index].measurementUnit === '100g' || this.recipeIngredients[index].measurementUnit === '100ml') {
-          kcal += (this.recipeIngredients[index].calories / 100) * this.recipeIngredients[index].amount;
+          kcal += (this.recipeIngredients[index].nutrition.calories / 100) * this.recipeIngredients[index].amount;
         } else {
-          kcal += this.recipeIngredients[index].calories * this.recipeIngredients[index].amount;
+          kcal += this.recipeIngredients[index].nutrition.calories * this.recipeIngredients[index].amount;
         }
       }
     }
