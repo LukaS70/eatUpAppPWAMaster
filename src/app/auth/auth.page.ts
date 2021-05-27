@@ -1,7 +1,7 @@
 import { UserDataComponent } from './user-data/user-data.component';
 import { Observable } from 'rxjs';
 import { AuthService, AuthResponseData } from './auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingController, AlertController, ModalController } from '@ionic/angular';
@@ -12,6 +12,12 @@ import { LoadingController, AlertController, ModalController } from '@ionic/angu
   styleUrls: ['./auth.page.scss'],
 })
 export class AuthPage implements OnInit {
+  @Input() date: string;
+  @Input() gender: string;
+  @Input() weight: number;
+  @Input() height: number;
+  @ViewChild('f') form: NgForm;
+  suggestedCalories: number;
   isLoading = false;
   isLogin = true;
 
@@ -36,11 +42,31 @@ export class AuthPage implements OnInit {
     }
     const email = form.value.email;
     const password = form.value.password;
-    this.authenticate(email, password);
+    const firstName = this.form.value['first-name'];
+    const lastName = this.form.value['last-name'];
+    const gender = this.form.value['user-gender'];
+    const dateOfBirth = this.form.value['date-of-birth'];
+    const weight = this.form.value['user-weight'];
+    const height = this.form.value['user-height'];
+    const maxCalories = this.form.value['max-calories'];
+    this.authenticate(email, password, firstName, lastName, gender, dateOfBirth, weight, height, maxCalories);
+    console.log(email + ' ' + password + ' ' + firstName + ' ' + lastName + ' ' + gender + ' ' + dateOfBirth + ' ' + weight + ' ' + height + ' ' + maxCalories);
     form.reset();
   }
 
-  authenticate(email: string, password: string) {
+  calculateCalories() {
+    const dateOfBirth = new Date(this.date);
+    const ageDifMs = new Date().getTime() - dateOfBirth.getTime();
+    const ageDate = new Date(ageDifMs);
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    if (this.gender === 'male') {
+      this.suggestedCalories = Math.round(66.47 + (13.75 * this.weight) + (5.0 * this.height - (6.75 * age)));
+    } else if (this.gender === 'female') {
+      this.suggestedCalories = Math.round(665.09 + (9.56 * this.weight) + (1.84 * this.height - (4.67 * age)));
+    }
+  }
+
+  authenticate(email: string, password: string, firstName: string, lastName: string, gender: string, dateOfBirth: Date, weight: number, height: number, maxCalories: number) {
     this.isLoading = true;
     let loadingMessage = 'Logging in...';
     if (!this.isLogin) {
@@ -52,8 +78,8 @@ export class AuthPage implements OnInit {
       if (this.isLogin) {
         authObs = this.authService.login(email, password);
       } else {
-        authObs = this.authService.sigup(email, password);
-        this.modalCtrl.create({ component: UserDataComponent }).then(modalEl => {
+        authObs = this.authService.sigup(email, password, firstName, lastName, gender, dateOfBirth, height, weight, maxCalories);
+        /* this.modalCtrl.create({ component: UserDataComponent }).then(modalEl => {
           modalEl.present();
           return modalEl.onDidDismiss();
         }).then(resultData => {
@@ -71,7 +97,7 @@ export class AuthPage implements OnInit {
           } else {
             return;
           }
-        });
+        }); */
       }
       authObs.subscribe(resData => {
         this.isLoading = false;

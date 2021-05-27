@@ -8,7 +8,7 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { Router } from '@angular/router';
 import { SegmentChangeEventDetail } from '@ionic/core';
 import { ShoppingListService } from 'src/app/shopping-list/shopping-list.service';
-import { DailyCalories } from 'src/app/my-account/daily-calories.model';
+import { DailyNutrition } from 'src/app/my-account/daily-nutrition.model';
 
 @Component({
   selector: 'app-recipes',
@@ -134,9 +134,9 @@ export class RecipesPage implements OnInit, OnDestroy {
     });
   }
 
-  addCalories(recipeId: string) {
-    const calorieDay: DailyCalories = new DailyCalories(null, null);
-    let dailyCalories: DailyCalories[] = [];
+  /* addCalories(recipeId: string) {        //change
+    const calorieDay: DailyNutrition = new DailyNutrition(null, null);
+    let dailyNutrition: DailyNutrition[] = [];
     this.alertCtrl.create({
       header: 'Add to Eaten Calories?',
       message: 'Do you really want to add recipe calories to todays clories count?',
@@ -154,19 +154,19 @@ export class RecipesPage implements OnInit, OnDestroy {
             }).then(loadingEl => {
               loadingEl.present();
               this.authService.user.pipe(take(1), switchMap(user => {
-                if (user.dailyCalories) {
-                  dailyCalories = user.dailyCalories;
+                if (user.dailyNutrition) {
+                  dailyNutrition = user.dailyNutrition;
                 }
-                if (!dailyCalories || dailyCalories.length <= 0) {
+                if (!dailyNutrition || dailyNutrition.length <= 0) {
                   calorieDay.day = new Date();
                   calorieDay.day.setHours(0, 0, 0, 0);
                   calorieDay.calories = Math.round((this.loadedRecipes.find(rec => rec.id === recipeId).calories
                     + Number.EPSILON) * 100) / 100;
-                  dailyCalories.push(calorieDay);
+                  dailyNutrition.push(calorieDay);
                   console.log('adding new because empty');
                 } else {
-                  const maxDate = new Date(Math.max.apply(Math, dailyCalories.map((o) => new Date(o.day)))); // proveriti da l radi
-                  const objLatest = dailyCalories.find((o) => new Date(o.day).getTime() === maxDate.getTime());
+                  const maxDate = new Date(Math.max.apply(Math, dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
+                  const objLatest = dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
                   maxDate.setHours(0, 0, 0, 0);
                   const now = new Date();
                   now.setHours(0, 0, 0, 0);
@@ -174,8 +174,8 @@ export class RecipesPage implements OnInit, OnDestroy {
                     calorieDay.day = maxDate;
                     calorieDay.calories = Math.round((objLatest.calories + this.loadedRecipes.find(rec => rec.id === recipeId).calories
                       + Number.EPSILON) * 100) / 100;
-                    dailyCalories = dailyCalories.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
-                    dailyCalories.push(calorieDay);
+                    dailyNutrition = dailyNutrition.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
+                    dailyNutrition.push(calorieDay);
                     console.log('adding to existing');
                   } else {
                     const newDate = new Date();
@@ -183,11 +183,11 @@ export class RecipesPage implements OnInit, OnDestroy {
                     calorieDay.day = newDate;
                     calorieDay.calories = Math.round((this.loadedRecipes.find(rec => rec.id === recipeId).calories
                       + Number.EPSILON) * 100) / 100;
-                    dailyCalories.push(calorieDay);
+                    dailyNutrition.push(calorieDay);
                     console.log('adding new standard');
                   }
                 }
-                return this.authService.updateDailyCalories(dailyCalories);
+                return this.authService.updateDailyNutrition(dailyNutrition);
               })).subscribe(() => {
                 loadingEl.dismiss();
                 this.toastCtrl.create({
@@ -204,7 +204,7 @@ export class RecipesPage implements OnInit, OnDestroy {
     }).then(alertEl => {
       alertEl.present();
     });
-  }
+  } */
 
   onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
     this.authService.user.pipe(take(1)).subscribe(user => {

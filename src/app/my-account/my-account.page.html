@@ -135,7 +135,7 @@
   </form>
 
   <ion-grid
-    *ngIf="!isLoading && user?.dateOfBirth && user?.firstName && user?.gender && user?.height && user?.lastName && user?.maxCalories && user?.weight && user?.dailyCalories">
+    *ngIf="!isLoading && user?.dateOfBirth && user?.firstName && user?.gender && user?.height && user?.lastName && user?.maxCalories && user?.weight && user?.dailyNutrition">
     <ion-row>
       <ion-col size-md="8" offset-md="2">
         <canvas baseChart [datasets]="chartData" [labels]="chartLabels" [chartType]="chartType" [colors]="chartColors"

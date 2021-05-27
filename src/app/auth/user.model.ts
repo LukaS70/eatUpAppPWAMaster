@@ -1,4 +1,4 @@
-import { DailyCalories } from './../my-account/daily-calories.model';
+import { DailyNutrition } from '../my-account/daily-nutrition.model';
 
 export class User {
     constructor(
@@ -11,11 +11,10 @@ export class User {
         public weight: number,
         public height: number,
         public maxCalories: number,
-        public dailyCalories: DailyCalories[],
+        public dailyNutrition: DailyNutrition[],
+        public shoppingList: any,       // change
         public token: string,
-        public tokenExpirationDate: Date,
-        public refreshToken: string,
-        public userDataId
+        public tokenExpirationDate: Date
     ) {}
 
     get userToken() {

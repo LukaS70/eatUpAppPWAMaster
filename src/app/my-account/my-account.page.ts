@@ -14,7 +14,7 @@ import { NgForm } from '@angular/forms';
 import { ISODateString } from '@capacitor/core';
 import { ChartDataSets } from 'chart.js';
 import { Label, Color } from 'ng2-charts';
-import { DailyCalories } from './daily-calories.model';
+import { DailyNutrition } from './daily-nutrition.model';
 import { take } from 'rxjs/operators';
 
 
@@ -128,15 +128,14 @@ export class MyAccountPage implements OnInit, OnDestroy {
         this.user.weight,
         this.user.height,
         this.user.maxCalories,
-        this.user.dailyCalories,
+        this.user.dailyNutrition,
+        this.user.shoppingList,
         this.user.userToken,
-        this.user.tokenExpirationDate,
-        this.user.refreshToken,
-        this.user.userDataId
+        this.user.tokenExpirationDate
       );
       this.date = new Date(this.editedUser.dateOfBirth).toISOString();
       this.calculateCalories();
-      if (
+      /* if (
         !activeUser.dateOfBirth ||
         !activeUser.firstName ||
         !activeUser.gender ||
@@ -185,7 +184,6 @@ export class MyAccountPage implements OnInit, OnDestroy {
                         cssClass: 'toastClass'
                       }).then(toastEl => {
                         toastEl.present();
-                        /* this.initForm(); */
                       });
                     });
                 });
@@ -195,10 +193,10 @@ export class MyAccountPage implements OnInit, OnDestroy {
             this.setChartData();
             this.isLoading = false;
           });
-      } else {
+      } else { */
         this.setChartData();
         this.isLoading = false;
-      }
+      /* } */
     });
     }, 1000);
   }
@@ -229,8 +227,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
     // updated user je novi ?? nzm da l ovo mora posto ima subscribe za usera
   }
 
-  updateUserData() {
-    this.loadingCtrl.create({
+  updateUserData() {      // change
+    /* this.loadingCtrl.create({
       keyboardClose: true,
       message: 'Saving changes...'
     }).then(loadingEl => {
@@ -243,7 +241,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
         this.form.value['user-weight'],
         this.form.value['user-height'],
         this.form.value['max-calories'],
-        this.user.dailyCalories
+        this.user.dailyNutrition
       ).subscribe(() => {
         loadingEl.dismiss();
         if (this.editMode) {
@@ -257,7 +255,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
           toastEl.present();
         });
       });
-    });
+    }); */
   }
 
   calculateCalories() {
@@ -329,31 +327,31 @@ export class MyAccountPage implements OnInit, OnDestroy {
     this.chartLabels2 = [];
     let sumForAverage = 0;
     let avg = 0;
-    if (this.user.dailyCalories) {
+    if (this.user.dailyNutrition) {
       // tslint:disable-next-line:prefer-for-of
-      for (let index = 0; index < this.user.dailyCalories.length; index++) {
-        const element = this.user.dailyCalories[index];
+      for (let index = 0; index < this.user.dailyNutrition.length; index++) {
+        const element = this.user.dailyNutrition[index];
         const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
         const [{ value: month }, , { value: day }, , { value: year }] = dateTimeFormat.formatToParts(new Date(element.day));
         this.chartLabels.push(`${day}-${month}`);
-        this.chartData[0].data.push(element.calories);
-        sumForAverage += element.calories;
+        this.chartData[0].data.push(element.nutrition.calories);
+        sumForAverage += element.nutrition.calories;
       }
 
-      avg = Math.round(((sumForAverage / this.user.dailyCalories.length) + Number.EPSILON) * 100) / 100;
+      avg = Math.round(((sumForAverage / this.user.dailyNutrition.length) + Number.EPSILON) * 100) / 100;
 
-      const maxDate = new Date(Math.max.apply(Math, this.user.dailyCalories.map((o) => new Date(o.day)))); // proveriti da l radi
-      const objLatest = this.user.dailyCalories.find((o) => new Date(o.day).getTime() === maxDate.getTime());
+      const maxDate = new Date(Math.max.apply(Math, this.user.dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
+      const objLatest = this.user.dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
       maxDate.setHours(0, 0, 0, 0);
       const now = new Date();
       now.setHours(0, 0, 0, 0);
       if (maxDate && maxDate.getTime() === now.getTime()) {
         // tslint:disable-next-line:quotemark
         this.chartLabels2.push("Today's Calories");
-        this.chartData2[0].data.push(objLatest.calories);
+        this.chartData2[0].data.push(objLatest.nutrition.calories);
       }
 
-      if (objLatest.calories <= this.user.maxCalories) {
+      if (objLatest.nutrition.calories <= this.user.maxCalories) {
         this.chartColors2 = [
           {
             borderColor: '#53fc3d',
@@ -454,9 +452,9 @@ export class MyAccountPage implements OnInit, OnDestroy {
     };
   }
 
-  onAddCalories() {
-    const calorieDay: DailyCalories = new DailyCalories(null, null);
-    let dailyCalories: DailyCalories[] = [];
+  /* onAddCalories() {    // change
+    const calorieDay: DailyNutrition = new DailyNutrition(null, null);
+    let dailyNutrition: DailyNutrition[] = [];
     this.alertCtrl.create({
       header: 'Add Calories',
       inputs: [
@@ -482,37 +480,37 @@ export class MyAccountPage implements OnInit, OnDestroy {
                 message: 'Adding calories...'
               }).then(loadingEl => {
                 loadingEl.present();
-                if (this.user.dailyCalories) {
-                  dailyCalories = this.user.dailyCalories;
+                if (this.user.dailyNutrition) {
+                  dailyNutrition = this.user.dailyNutrition;
                 }
-                if (!dailyCalories || dailyCalories.length <= 0) {
+                if (!dailyNutrition || dailyNutrition.length <= 0) {
                   calorieDay.day = new Date();
                   calorieDay.day.setHours(0, 0, 0, 0);
                   calorieDay.calories = Math.round((+data.calories + Number.EPSILON) * 100) / 100;
-                  dailyCalories.push(calorieDay);
+                  dailyNutrition.push(calorieDay);
                   console.log('adding new because empty');
                 } else {
-                  const maxDate = new Date(Math.max.apply(Math, dailyCalories.map((o) => new Date(o.day)))); // proveriti da l radi
-                  const objLatest = dailyCalories.find((o) => new Date(o.day).getTime() === maxDate.getTime());
+                  const maxDate = new Date(Math.max.apply(Math, dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
+                  const objLatest = dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
                   maxDate.setHours(0, 0, 0, 0);
                   const now = new Date();
                   now.setHours(0, 0, 0, 0);
                   if (maxDate.getTime() === now.getTime()) {
                     calorieDay.day = maxDate;
                     calorieDay.calories = Math.round((objLatest.calories + +data.calories + Number.EPSILON) * 100) / 100;
-                    dailyCalories = dailyCalories.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
-                    dailyCalories.push(calorieDay);
+                    dailyNutrition = dailyNutrition.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
+                    dailyNutrition.push(calorieDay);
                     console.log('adding to existing');
                   } else {
                     const newDate = new Date();
                     newDate.setHours(0, 0, 0, 0);
                     calorieDay.day = newDate;
                     calorieDay.calories = Math.round((+data.calories + Number.EPSILON) * 100) / 100;
-                    dailyCalories.push(calorieDay);
+                    dailyNutrition.push(calorieDay);
                     console.log('adding new standard');
                   }
                 }
-                this.authService.updateDailyCalories(dailyCalories).pipe(take(1)).subscribe(() => {
+                this.authService.updateDailyNutrition(dailyNutrition).pipe(take(1)).subscribe(() => {
                   loadingEl.dismiss();
                   this.toastCtrl.create({
                     message: 'Calories added successfuly!',
@@ -530,7 +528,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
     }).then(alertEl => {
       alertEl.present();
     });
-  }
+  } */
 
   /* calculateCalories() {
     const dateOfBirth = new Date(this.form.value.dateOfBirth);
