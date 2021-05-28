@@ -4,7 +4,7 @@
       <ion-menu-button menu="m1"></ion-menu-button>
     </ion-buttons>
     <ion-searchbar placeholder="Search Recipes" animated inputmode="text" spellcheck="true"
-      (ionChange)="onFilterRecipes($event.target.value)" *ngIf="showSearchBar"></ion-searchbar>
+      (ionChange)="onFilterRecipes($event.target.value)" *ngIf="showSearchBar" color="primary"></ion-searchbar>
     <ion-title *ngIf="!showSearchBar">Recipes</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="onToggleSearchBar()">
@@ -20,8 +20,8 @@
 
 <ion-content>
   <ion-progress-bar type="indeterminate" *ngIf="isLoading"></ion-progress-bar>
-  <ion-segment value="all" (ionChange)="onFilterUpdate($event)" scrollable [(ngModel)]="selectedSegment"
-    [disabled]='disableSegmentSearch'>
+  <ion-segment value="all" (ionChange)="onFilterUpdate($event)" scrollable [(ngModel)]="selectedSegment" 
+    [disabled]='disableSegmentSearch'  color="tertiary">
     <ion-segment-button value="all">All</ion-segment-button>
     <ion-segment-button value="myRecipes">My Recipes</ion-segment-button>
     <ion-segment-button value="chicken">Chicken</ion-segment-button>

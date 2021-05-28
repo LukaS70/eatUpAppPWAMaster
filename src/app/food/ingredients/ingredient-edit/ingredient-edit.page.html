@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>Edit Ingredient</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="onUpdateIngredient()" color="secondary"
+      <ion-button (click)="onUpdateIngredient()"
         [disabled]="!form?.valid || !form.get('image').value">
         <ion-icon name="checkbox" slot="icon-only"></ion-icon>
       </ion-button>

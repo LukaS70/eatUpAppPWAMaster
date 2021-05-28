@@ -48,11 +48,11 @@ export class MyAccountPage implements OnInit, OnDestroy {
   chartColors: Color[] = [
     {
       borderColor: '#000000',
-      backgroundColor: '#c3ff8f',
-      hoverBackgroundColor: '#d7fcb6',
-      hoverBorderColor: '#5f6659',
+      backgroundColor: '#cae5c4',
+      hoverBackgroundColor: '#cfe8ca',
+      hoverBorderColor: '#success',
       pointBackgroundColor: '#438a06',
-      pointBorderColor: '#5f6659',
+      pointBorderColor: '#success',
       borderWidth: 1
     }
   ];
@@ -257,10 +257,10 @@ export class MyAccountPage implements OnInit, OnDestroy {
       if (objLatest.nutrition.calories <= this.user.maxCalories) {
         this.chartColors2 = [
           {
-            borderColor: '#53fc3d',
-            backgroundColor: '#9ee895',
-            hoverBackgroundColor: '#a6f7a7',
-            hoverBorderColor: '#53fc3d',
+            borderColor: '#aec7a9',
+            backgroundColor: '#cae5c4',
+            hoverBackgroundColor: '#cfe8ca',
+            hoverBorderColor: '#aec7a9',
             borderWidth: 1
           }
         ];

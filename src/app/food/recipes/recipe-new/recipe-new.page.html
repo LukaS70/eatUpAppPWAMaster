@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>New Recipe</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="onAddRecipe()" color="secondary"
+      <ion-button (click)="onAddRecipe()"
         [disabled]="!form.valid || !recipeIngredients || recipeIngredients.length <= 0 || !checkAmounts() || !form.get('image').value">
         <ion-icon name="checkbox" slot="icon-only"></ion-icon>
       </ion-button>
@@ -198,14 +198,14 @@
               <ion-avatar slot="start">
                 <ion-img [src]="ingredient.image"></ion-img>
               </ion-avatar>
-              <ion-col size="5">
+              <ion-col size="4">
                 <ion-label>
                   <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1)
                     }}</h5>
-                  <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit['perName'] }}</p>
+                  <!-- <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit['perName'] }}</p> -->
                 </ion-label>
               </ion-col>
-              <ion-col size="3">
+              <ion-col size="4">
                 <ion-input placeholder="amount" required type="number" class="input-box" style="text-align: center;"
                   name="amount" (ionChange)="amountEntered($event.detail.value, ingredient.id)"></ion-input>
               </ion-col>
