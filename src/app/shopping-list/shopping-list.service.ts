@@ -8,23 +8,15 @@ import { BehaviorSubject } from 'rxjs';
 
 
 interface ShoppingListData {
-  fetchedUserId;
-  ingredients: { amount: number, checked: boolean, ingredientsId: string }[];
+  id;
+  creator;
+  items: { ingredient: string, amount: number, checked: boolean }[];
 }
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingListService {
   appShoppingList = new BehaviorSubject<ShoppingList>(null);
-  /* appShoppingList = new BehaviorSubject<ShoppingList>(
-    new ShoppingList(
-      'asd',
-      [{amount: 111, ingredientsId: '-MECeMQ6Hy7-Wtw_h80P', checked: false},
-      {amount: 222, ingredientsId: '-MECeMQ6Hy7-Wtw_h80P', checked: false},
-    {amount: 333, ingredientsId: '-MECf02c7GKLrY-b24--', checked: false}],
-      'asd'
-    )
-  ); */
 
   get shoppingListItems() {
     return this.appShoppingList.asObservable();
@@ -35,56 +27,28 @@ export class ShoppingListService {
     private http: HttpClient
   ) { }
 
-  /*  getShoppingListData() {
-     let fetchedUserdId;
-     return this.authService.user.pipe(take(1), switchMap(user => {
-       fetchedUserdId = user.id;
-       return this.http.get<{ [key: string]: ShoppingListData }>(
-         `https://eatupappproject.firebaseio.com/shoppingListData.json?orderBy="userId"&equalTo="${fetchedUserdId}"
-        `)
-       .pipe(take(1), map(shoppingListData => {
-         if (shoppingListData) {
-           for (const key in shoppingListData) {
-             if (shoppingListData.hasOwnProperty(key)) {
-               let item;
-               const items = [];
-               // tslint:disable-next-line:prefer-for-of
-               for (let index = 0; index < shoppingListData[key].ingredientsForShoppingList.length; index++) {
-                 // tslint:disable-next-line:no-shadowed-variable
-                 const element = shoppingListData[key].ingredientsForShoppingList[index];
-                 item = new ShoppingListItem(
-                   element.amount,
-                   element.ingredientsId,
-                   element.customName
-                 );
-                 items.push(item);
-               }
-               this.appShoppingList.next(items);
-               console.log(this.appShoppingList);
-             }
-           }
-         } else {
-           console.log('Could not retrive shopping list items');
-         }
-         return;
-       }));
-     }));
-   } */
   getShoppingListData() {
-    let fetchedUserId;
+    let fetchedShoppingListId;
     return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      return this.http.get<{ [key: string]: ShoppingListData }>(`https://eatupappproject.firebaseio.com/shoppingList.json?orderBy="fetchedUserId"&equalTo="${fetchedUserId}"`)
+      fetchedShoppingListId = user.shoppingList['id'];
+
+      return this.http.get<{ [key: string]: ShoppingListData }>(`http://localhost:5000/api/shopping-list/${fetchedShoppingListId}`)
         .pipe(take(1), map(shoppingListData => {
           if (shoppingListData) {
+            console.log(shoppingListData);
+
             for (const key in shoppingListData) {
               if (shoppingListData.hasOwnProperty(key)) {
                 const shoppingList = new ShoppingList(
-                  key,
-                  shoppingListData[key].fetchedUserId,
-                  shoppingListData[key].ingredients
+                  shoppingListData[key].id,
+                  shoppingListData[key].creator,
+                  shoppingListData[key].items
                 );
-                this.appShoppingList.next(shoppingList);
+                const sl = shoppingList;
+                for (let index = 0; index < shoppingList.items.length; index++) {
+                  sl.items[index].ingredient = shoppingList.items[index].ingredient['id'];
+                }
+                this.appShoppingList.next(sl);
                 console.log(this.appShoppingList);
               }
             }
@@ -96,33 +60,12 @@ export class ShoppingListService {
     }));
   }
 
-  postShoppingList(ingredients: { amount: number, ingredientsId: string, checked: boolean }[]) {
-    let fetchedUserId: string;
-    let generatedId: string;
-    let slItems: ShoppingList;
-    return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      slItems = new ShoppingList(
-        Math.random.toString(),
-        fetchedUserId,
-        ingredients
-      );
-      return this.http.post<{ name: string }>('https://eatupappproject.firebaseio.com/shoppingList.json', { ingredients, fetchedUserId });
-    }), switchMap(resData => {
-      generatedId = resData.name;
-      return this.shoppingListItems;
-    }), take(1), tap(sl => {
-      slItems.id = generatedId;
-      this.appShoppingList.next(slItems);
-    }));
-  }
-
-  updateShoppingList(ingredientsForShoppingList: { amount: number, ingredientsId: string, checked: boolean }[], editMode: boolean) {
+  updateShoppingList(ingredientsForShoppingList: { ingredient: string, amount: number, checked: boolean }[], editMode: boolean) {
     let fetchedUserId: string;
     let sl;
     let ingredients: {
+      ingredient: string;
       amount: number;
-      ingredientsId: string;
       checked: boolean;
     }[];
     return this.authService.user.pipe(take(1), switchMap(user => {
@@ -133,13 +76,13 @@ export class ShoppingListService {
       return this.shoppingListItems;
     }), take(1), switchMap(loadedsl => {
       if (!editMode) {
-        ingredients = loadedsl.ingredientsForShoppingList;
+        ingredients = loadedsl.items;
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < ingredientsForShoppingList.length; index++) {
           // tslint:disable-next-line:no-shadowed-variable
           const element = ingredientsForShoppingList[index];
-          if (ingredients.find(ing => ing.ingredientsId === element.ingredientsId)) {
-            ingredients.find(ing => ing.ingredientsId === element.ingredientsId).amount += element.amount;
+          if (ingredients.find(ing => ing.ingredient === element.ingredient)) {
+            ingredients.find(ing => ing.ingredient === element.ingredient).amount += element.amount;
           } else {
             ingredients.push(element);
           }
@@ -152,17 +95,17 @@ export class ShoppingListService {
         fetchedUserId,
         ingredients
       );
-      return this.http.put(`
-      https://eatupappproject.firebaseio.com/shoppingList/${loadedsl.id}.json`,
-        { ingredients, fetchedUserId }
+      return this.http.patch(`
+      http://localhost:5000/api/shopping-list/${loadedsl.id}`,
+        { items: ingredients }
       );
     }), take(1), tap(() => {
       this.appShoppingList.next(sl);
     }));
   }
 
-  /* deleteShoppingListItem(ingId: string) {
-    let fetchedUserId: string;
+  deleteShoppingListItem(ingId: string) {
+    /* let fetchedUserId: string;   //change ???
     return this.authService.user.pipe(take(1), switchMap(user => {
       fetchedUserId = user.id;
       return this.appShoppingList;
@@ -172,6 +115,6 @@ export class ShoppingListService {
       https://eatupappproject.firebaseio.com/shoppingList/${loadedSl.id}.json`,
         { ingredients, fetchedUserId }
       );
-    }));
-  } */
+    })); */
+  }
 }

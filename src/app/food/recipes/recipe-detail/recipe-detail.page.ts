@@ -118,7 +118,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
   }
 
   addToShoppingList() {
-    /* this.alertCtrl.create({
+    this.alertCtrl.create({
       header: 'Add to Shopping List?',
       message: 'Do you really want to add recipe ingredients to the shopping list?',
       buttons: [
@@ -134,27 +134,23 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
               message: 'Adding...'
             }).then(loadingEl => {
               loadingEl.present();
-              const ingForSl: { amount: number, ingredientsId: string, checked: boolean }[] = [];
+              const ingForSl: { ingredient: string, amount: number, checked: boolean }[] = [];
               // tslint:disable-next-line:prefer-for-of
               for (let index = 0; index < this.ingredients.length; index++) {
                 ingForSl.push({
+                  ingredient: this.ingredients[index].id,
                   amount: this.ingredients[index].amount,
-                  ingredientsId: this.ingredients[index].id,
                   checked: false
                 });
               }
               this.shoppingListService.shoppingListItems.pipe(take(1)).subscribe(sl => {
-                if (!sl || !sl.id || !sl.ingredientsForShoppingList || !sl.userId) {
-                  this.shoppingListService.postShoppingList(ingForSl).subscribe(() => {
-                    loadingEl.dismiss();
-                    this.router.navigateByUrl('/food/tabs/recipes');
-                    this.toastCtrl.create({
-                      message: 'Ingredients added successfully!',
-                      duration: 2000,
-                      cssClass: 'toastClass'
-                    }).then(toastEl => {
-                      toastEl.present();
-                    });
+                if (!sl || !sl.id || !sl.items || !sl.creator) {
+                  this.toastCtrl.create({
+                    message: 'Something went wrong!',
+                    duration: 2000,
+                    cssClass: 'toastClass'
+                  }).then(toastEl => {
+                    toastEl.present();
                   });
                 } else {
                   this.shoppingListService.updateShoppingList(ingForSl, false).subscribe(() => {
@@ -176,7 +172,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
       ]
     }).then(alertEl => {
       alertEl.present();
-    }); */
+    });
   }
 
   addCalories() {    //change

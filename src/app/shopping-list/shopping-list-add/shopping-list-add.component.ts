@@ -52,13 +52,13 @@ export class ShoppingListAddComponent implements OnInit {
 
   addToShoppingList(ingId: string) {
     const ingForAdd: {
+      ingredient: string;
       amount: number;
-      ingredientsId: string;
       checked: boolean;
     }[] = [];
     ingForAdd.push({
       amount: +this.loadedIngredients.find(ing => ing.id === ingId).amount,
-      ingredientsId: this.loadedIngredients.find(ing => ing.id === ingId).id,
+      ingredient: this.loadedIngredients.find(ing => ing.id === ingId).id,
       checked: false
     });
     this.loadingCtrl.create({

@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 })
 export class ShoppingListPage implements OnInit, OnDestroy {
   loadedShoppingList: ShoppingList;
-  slItems: { amount: number, ingredientsId: string, checked: boolean }[] = [];
+  slItems: { ingredient: string, amount: number, checked: boolean }[] = [];
   isLoading = false;
   slSub: Subscription;
   ingSub: Subscription;
@@ -40,15 +40,17 @@ export class ShoppingListPage implements OnInit, OnDestroy {
     this.slSub = this.shoppingListService.shoppingListItems.subscribe(sl => {
       this.isLoading = true;
       this.slIngredients = [];
-      if (sl && sl.ingredientsForShoppingList && sl.ingredientsForShoppingList.length > 0) {
+      if (sl && sl.items && sl.items.length > 0) {
         this.loadedShoppingList = sl;
-        this.slItems = sl.ingredientsForShoppingList;
+        this.slItems = sl.items;
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < this.slItems.length; index++) {
           // tslint:disable-next-line:no-shadowed-variable
           const element = this.slItems[index];
-          if (element.ingredientsId) {
-            this.ingSub = this.ingredientsService.getIngredient(element.ingredientsId)
+          console.log(element);
+
+          if (element.ingredient) {
+            this.ingSub = this.ingredientsService.getIngredient(element.ingredient)
               .pipe(take(1)).subscribe(ing => {
                 ing.amount = +element.amount;
                 // this.ingredients.push(ing);
@@ -85,12 +87,12 @@ export class ShoppingListPage implements OnInit, OnDestroy {
   }
 
   ionViewWillLeave() {
-    const ingsForUpdate: { amount: number, ingredientsId: string, checked: boolean }[] = [];
+    const ingsForUpdate: { ingredient: string, amount: number, checked: boolean }[] = [];
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < this.slIngredients.length; index++) {
       ingsForUpdate.push({
+        ingredient: this.slIngredients[index].ingredient.id,
         amount: +this.slIngredients[index].ingredient.amount,
-        ingredientsId: this.slIngredients[index].ingredient.id,
         checked: this.slIngredients[index].isChecked
       });
     }
@@ -99,6 +101,8 @@ export class ShoppingListPage implements OnInit, OnDestroy {
       message: 'Saving...'
     }).then(loadingEl => {
       loadingEl.present(); */
+    console.log(ingsForUpdate);
+
     this.shoppingListService.updateShoppingList(ingsForUpdate, true).pipe(take(1)).subscribe(() => {
       this.slIngredients = [];
       /* loadingEl.dismiss();
@@ -124,12 +128,12 @@ export class ShoppingListPage implements OnInit, OnDestroy {
         toastEl.present();
       });
     } else {
-      const ingsForUpdate: { amount: number, ingredientsId: string, checked: boolean }[] = [];
+      const ingsForUpdate: { ingredient: string, amount: number, checked: boolean }[] = [];
       // tslint:disable-next-line:prefer-for-of
       for (let index = 0; index < this.slIngredients.length; index++) {
         ingsForUpdate.push({
+          ingredient: this.slIngredients[index].ingredient.id,
           amount: +this.slIngredients[index].ingredient.amount,
-          ingredientsId: this.slIngredients[index].ingredient.id,
           checked: this.slIngredients[index].isChecked
         });
       }
@@ -165,15 +169,15 @@ export class ShoppingListPage implements OnInit, OnDestroy {
                 message: 'Removing...'
               }).then(loadingEl => {
                 loadingEl.present();
-                const updatedIng: { amount: number; ingredientsId: string; checked: boolean; }[] = [];
+                const updatedIng: { ingredient: string; amount: number; checked: boolean; }[] = [];
                 this.slIngredients = this.slIngredients.filter(item => !item.isChecked);
                 // tslint:disable-next-line:prefer-for-of
                 for (let index = 0; index < this.slIngredients.length; index++) {
                   // tslint:disable-next-line:no-shadowed-variable
                   const element = this.slIngredients[index];
                   updatedIng.push({
+                    ingredient: element.ingredient.id,
                     amount: element.ingredient.amount,
-                    ingredientsId: element.ingredient.id,
                     checked: element.isChecked
                   });
                 }

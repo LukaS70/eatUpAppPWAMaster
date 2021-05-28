@@ -50,8 +50,8 @@
             <ion-label style="text-align: right;">{{ element.ingredient.amount }}</ion-label>
           </ion-col>
           <ion-col size="2">
-            <p *ngIf="element.ingredient.measurementUnit==='100g' || element.ingredient.measurementUnit==='100ml'"> {{ element.ingredient.measurementUnit | slice:3 }} </p>
-            <p *ngIf="element.ingredient.measurementUnit!=='100g' && element.ingredient.measurementUnit!=='100ml'"> {{ element.ingredient.measurementUnit }} </p>
+            <p *ngIf="element.ingredient.measurementUnit['perName']==='100g' || element.ingredient.measurementUnit['perName']==='100ml'"> {{ element.ingredient.measurementUnit['perName'] | slice:3 }} </p>
+            <p *ngIf="element.ingredient.measurementUnit['perName']!=='100g' && element.ingredient.measurementUnit['perName']!=='100ml'"> {{ element.ingredient.measurementUnit['perName'] }} </p>
           </ion-col>
           </ion-item>
         </ion-list>

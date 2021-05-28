@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>User Data</ion-title>
+    <ion-title>Add Ingredients To Shopping List</ion-title>
     <ion-buttons slot="primary">
       <ion-button (click)="onCancel()">
         <ion-icon name="close"></ion-icon>
@@ -31,7 +31,8 @@
               <ion-label>
                 <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}
                 </h5>
-                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+                <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit['perName']
+                  }}</p>
               </ion-label>
             </ion-col>
             <ion-col size="3">
@@ -40,14 +41,17 @@
                 (ionChange)="amountEntered($event.detail.value, ingredient.id)" #amount></ion-input>
             </ion-col>
             <ion-col size="2">
-              <p *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'">
-                {{ ingredient.measurementUnit | slice:3 }} </p>
-              <p *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'">
-                {{ ingredient.measurementUnit }} </p>
+              <p
+                *ngIf="ingredient.measurementUnit['perName']==='100g' || ingredient.measurementUnit['perName']==='100ml'">
+                {{ ingredient.measurementUnit['perName'] | slice:3 }} </p>
+              <p
+                *ngIf="ingredient.measurementUnit['perName']!=='100g' && ingredient.measurementUnit['perName']!=='100ml'">
+                {{ ingredient.measurementUnit['perName'] }} </p>
             </ion-col>
             <ion-col size="2">
               <ion-buttons>
-                <ion-button color="success" (click)="addToShoppingList(ingredient.id)" [disabled]="!amount || amount.value <= 0">
+                <ion-button color="success" (click)="addToShoppingList(ingredient.id)"
+                  [disabled]="!amount || amount.value <= 0">
                   <ion-icon name="add-circle" slot="icon-only"></ion-icon>
                 </ion-button>
               </ion-buttons>

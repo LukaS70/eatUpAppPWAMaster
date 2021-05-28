@@ -1,7 +1,7 @@
 export class ShoppingList {
     constructor(
         public id,
-        public userId,
-        public ingredientsForShoppingList: {amount: number, ingredientsId: string, checked: boolean}[]
-    ) {}
+        public creator,
+        public items: { ingredient: string, amount: number, checked: boolean }[]
+    ) { }
 }
