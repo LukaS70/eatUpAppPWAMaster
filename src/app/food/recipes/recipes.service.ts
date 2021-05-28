@@ -7,11 +7,12 @@ import { Recipe } from './recipe.model';
 import { HttpClient } from '@angular/common/http';
 
 interface RecipeData {
+  _id?: string;
   id: string;
   name: string;
   instructions: string;
   image: string;
-  ingredients: { ingredientId: string, amount: number }[];
+  ingredients: { ingredient: string, amount: number }[];
   nutrition: Nutrition;
   reviewRequested: boolean;
   public: boolean;
@@ -50,6 +51,7 @@ export class RecipesService {
             ));
           }
         }
+        console.log(rec);
         return rec;
       }), tap(rec => {
         this.appRecipes.next(rec);
@@ -57,19 +59,19 @@ export class RecipesService {
   }
 
   getRecipe(id: string) {
-    return this.http.get<RecipeData>(`http://localhost:5000/api/recipes/${id}`)
+    return this.http.get<{ [key: string]: RecipeData }>(`http://localhost:5000/api/recipes/${id}`)
       .pipe(take(1), map(recipeData => {
         return new Recipe(
-          recipeData.id,
-          recipeData.name,
-          recipeData.instructions,
-          recipeData.image,
-          recipeData.ingredients,
-          recipeData.nutrition,
-          recipeData.reviewRequested,
-          recipeData.public,
-          recipeData.category,
-          recipeData.creator
+          recipeData.recipe.id,
+          recipeData.recipe.name,
+          recipeData.recipe.instructions,
+          recipeData.recipe.image,
+          recipeData.recipe.ingredients,
+          recipeData.recipe.nutrition,
+          recipeData.recipe.reviewRequested,
+          recipeData.recipe.public,
+          recipeData.recipe.category,
+          recipeData.recipe.creator
         );
       }));
   }
@@ -78,12 +80,15 @@ export class RecipesService {
     name: string,
     instructions: string,
     image: string,
-    ingredients: { ingredientId: string, amount: number }[],
+    ingredients: { ingredient: string, amount: number }[],
     nutrition: Nutrition,
     reviewRequested: boolean,
     category: string
   ) {
-    return this.http.post<{}>(`http://localhost:5000/api/recipes`,
+    let generatedId: string;
+    let creator: string;
+    let newRecipe: Recipe;
+    return this.http.post<RecipeData>(`http://localhost:5000/api/recipes`,
       {
         name: name,
         instructions: instructions,
@@ -93,54 +98,79 @@ export class RecipesService {
         reviewRequested: reviewRequested,
         category: category
       }
-    ).pipe(take(1), tap(this.fetchRecipes));  // change ???
+    ).pipe(take(1), switchMap(resData => {
+      generatedId = resData._id;
+      creator = resData.creator
+      return this.recipes;
+    }), take(1), tap(rec => {
+      newRecipe = new Recipe(
+        generatedId,
+        name,
+        instructions,
+        image,
+        ingredients,
+        nutrition,
+        reviewRequested,
+        true,
+        category,
+        creator
+      );
+      this.appRecipes.next(rec.concat(newRecipe));
+    }));
   }
 
-  updateRecipe(   //change
+  updateRecipe(
     recipeId: string,
     name: string,
-    ingredientsForRecipe: { ingredientsId: string, amount: number }[],
-    calories: number,
+    instructions: string,
     image: string,
-    category: string,
-    instructions: string
+    ingredients: { ingredient: string, amount: number }[],
+    nutrition: Nutrition,
+    reviewRequested: boolean,
+    category: string
   ) {
-    /* let updatedRecipes: Recipe[];
-    let fetchedUserId;
-    return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      return this.recipes.pipe(take(1), switchMap(rec => {
-        if (!rec || rec.length <= 0) {
-          return this.fetchRecipes();
-        } else {
-          return of(rec);
+    let updatedRecipes: Recipe[];
+    return this.recipes.pipe(take(1), switchMap(rec => {
+      if (!rec || rec.length <= 0) {
+        return this.fetchRecipes();
+      } else {
+        return of(rec);
+      }
+    }), switchMap(rec => {
+      const updatedRecipeIndex = rec.findIndex(recep => recep.id === recipeId);
+      updatedRecipes = [...rec];
+      const oldRecipe = updatedRecipes[updatedRecipeIndex];
+      updatedRecipes[updatedRecipeIndex] = new Recipe(
+        oldRecipe.id,
+        name,
+        instructions,
+        image,
+        ingredients,
+        nutrition,
+        reviewRequested,
+        true,
+        category,
+        oldRecipe.creator
+      );
+      return this.http.patch(
+        `http://localhost:5000/api/recipes/${recipeId}`,
+        {
+          name: name,
+          instructions: instructions,
+          image: image,
+          ingredients: ingredients,
+          nutrition: nutrition,
+          reviewRequested: reviewRequested,
+          category: category
         }
-      }), switchMap(rec => {
-        const updatedRecipeIndex = rec.findIndex(recep => recep.id === recipeId);
-        updatedRecipes = [...rec];
-        const oldRecipe = updatedRecipes[updatedRecipeIndex];
-        updatedRecipes[updatedRecipeIndex] = new Recipe(
-          oldRecipe.id,
-          name,
-          ingredientsForRecipe,
-          calories,
-          image,
-          category,
-          instructions,
-          fetchedUserId
-        );
-        return this.http.put(
-          `https://eatupappproject.firebaseio.com/recipes/${recipeId}.json`,
-          { ...updatedRecipes[updatedRecipeIndex], id: null }
-        );
-      }), tap(() => {
-        this.appRecipes.next(updatedRecipes);
-      }));
-    })); */
+      );
+    }), tap(() => {
+      this.appRecipes.next(updatedRecipes);
+    }));
   }
 
   deleteRecipe(id: string) {
-    return this.http.delete(`https://eatupappproject.firebaseio.com/recipes/${id}.json`).pipe(switchMap(() => {
+    return this.http.delete(`http://localhost:5000/api/recipes/${id}`).pipe(switchMap(() => {
       return this.recipes;
     }), take(1), tap(recs => {
       this.appRecipes.next(recs.filter(r => r.id !== id));

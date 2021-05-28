@@ -1,3 +1,4 @@
+import { Nutrition } from './../../../shared/nutrition.modal';
 import { take, switchMap, map, finalize } from 'rxjs/operators';
 import { RecipesService } from './../recipes.service';
 import { IngredientsService } from './../../ingredients/ingredients.service';
@@ -61,7 +62,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
           // tslint:disable-next-line:prefer-for-of
           for (let index = 0; index < rec.ingredients.length; index++) {
             const element = rec.ingredients[index];
-            this.ingSub2 = this.ingredientsService.getIngredient(rec.ingredients[index].ingredientId)
+            this.ingSub2 = this.ingredientsService.getIngredient(rec.ingredients[index].ingredient['id'])
               .pipe(take(1)).subscribe(ing => {
                 ing.amount = rec.ingredients[index].amount;
                 ingreds.push(ing);
@@ -75,7 +76,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
               updateOn: 'blur',
               validators: [Validators.required]
             }),
-            category: new FormControl(rec.category, {
+            category: new FormControl(rec.category['id'], {
               updateOn: 'blur',
               validators: [Validators.required]
             }),
@@ -84,6 +85,26 @@ export class RecipeEditPage implements OnInit, OnDestroy {
               validators: [Validators.required]
             }),
             calories: new FormControl(rec.nutrition.calories, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(0)]
+            }),
+            totalFats: new FormControl(rec.nutrition.totalFats, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(0)]
+            }),
+            saturatedFats: new FormControl(rec.nutrition.saturatedFats, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(0)]
+            }),
+            totalCarbohydrates: new FormControl(rec.nutrition.totalCarbohydrates, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(0)]
+            }),
+            sugar: new FormControl(rec.nutrition.sugar, {
+              updateOn: 'blur',
+              validators: [Validators.required, Validators.min(0)]
+            }),
+            proteine: new FormControl(rec.nutrition.proteine, {
               updateOn: 'blur',
               validators: [Validators.required, Validators.min(0)]
             })
@@ -100,58 +121,6 @@ export class RecipeEditPage implements OnInit, OnDestroy {
           });
         });
       });
-      /* this.isLoading = true;
-      this.ingSub = this.ingredientsService.ingredients.pipe(take(1), map(ings => {
-        return this.allIngredients = ings
-          .sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : ((b.name.toLowerCase() > a.name.toLowerCase()) ? -1 : 0));
-      }), take(1), switchMap( () => {
-        return this.recipesService.getRecipe(paramMap.get('recipeId'));
-      }), take(1), map(rec => {
-        this.recipe = rec;
-        const ingreds: Ingredient[] = [];
-        // tslint:disable-next-line:prefer-for-of
-        for (let index = 0; index < rec.ingredientsForRecipe.length; index++) {
-          const ing = this.allIngredients.find(i => i.id === rec.ingredientsForRecipe[index].ingredientsId);
-          console.log(ing);
-          console.log(this.allIngredients);
-          console.log(this.recipe);
-          ing.amount = rec.ingredientsForRecipe[index].amount;
-          ingreds.push(ing);
-        }
-        console.log(ingreds);
-        this.recipeIngredients = ingreds;
-        return;
-      })).subscribe(() => {
-        this.form = new FormGroup({
-          image: new FormControl(this.recipe.image),
-          name: new FormControl(this.recipe.name, {
-            updateOn: 'blur',
-            validators: [Validators.required]
-          }),
-          category: new FormControl(this.recipe.category, {
-            updateOn: 'blur',
-            validators: [Validators.required]
-          }),
-          instructions: new FormControl(this.recipe.instructions, {
-            updateOn: 'blur',
-            validators: [Validators.required]
-          }),
-          calories: new FormControl(this.recipe.calories, {
-            updateOn: 'blur',
-            validators: [Validators.required, Validators.min(0)]
-          })
-        });
-        this.isLoading = false;
-      }, error => {
-        this.alertCtrl.create({
-          header: 'An error occured!',
-          message: 'Recipe could not be fetched. Please try again later.',
-          buttons: [{ text: 'Okay', handler: () => { this.router.navigate(['/food/tabs/recipes']); } }]
-        }).then(alertEl => {
-          alertEl.present();
-          console.log(error);
-        });
-      }); */
     });
   }
 
@@ -188,17 +157,17 @@ export class RecipeEditPage implements OnInit, OnDestroy {
 
   removeFromRecipeIngredients(ingId: string) {
     this.recipeIngredients = this.recipeIngredients.filter(ing => ing.id !== ingId);
-    this.calculateCalories();
+    this.calculateNutrition();
   }
 
   amountEntered(amount: number, ingId: string) {
     this.recipeIngredients.find(ing => ing.id === ingId).amount = amount;
-    this.calculateCalories();
+    this.calculateNutrition();
   }
 
-  onUpdateRecipe() {      //change
+  onUpdateRecipe() {
     // tslint:disable-next-line:prefer-for-of
-    /* for (let index = 0; index < this.recipeIngredients.length; index++) {
+    for (let index = 0; index < this.recipeIngredients.length; index++) {
       if (!this.recipeIngredients[index].amount || this.recipeIngredients[index].amount === 0) {
         this.alertCtrl.create({
           header: 'No amount entered!',
@@ -235,22 +204,31 @@ export class RecipeEditPage implements OnInit, OnDestroy {
             }).then(loadingEl => {
               loadingEl.present();
               // tslint:disable-next-line:prefer-const
-              let ingsForRecipe: { ingredientsId: string, amount: number }[] = [];
+              let ingsForRecipe: { ingredient: string, amount: number }[] = [];
               // tslint:disable-next-line:prefer-for-of
               for (let index = 0; index < this.recipeIngredients.length; index++) {
                 const ingId = this.recipeIngredients[index].id;
                 const ingAmount = this.recipeIngredients[index].amount;
-                ingsForRecipe.push({ ingredientsId: ingId, amount: ingAmount });
+                ingsForRecipe.push({ ingredient: ingId, amount: ingAmount });
               }
+              const nutrition = new Nutrition(
+                this.form.value.calories,
+                this.form.value.totalFats,
+                this.form.value.saturatedFats,
+                this.form.value.totalCarbohydrates,
+                this.form.value.sugar,
+                this.form.value.proteine
+              );
               if (!this.showPicker) {
                 this.recipesService.updateRecipe(
                   this.recipeId,
                   this.form.value.name.toLowerCase().charAt(0).toUpperCase() + this.form.value.name.toLowerCase().slice(1),
-                  ingsForRecipe,
-                  this.form.value.calories,
+                  this.form.value.instructions,
                   this.recipe.image,
-                  this.form.value.category,
-                  this.form.value.instructions
+                  ingsForRecipe,
+                  nutrition,
+                  false,
+                  this.form.value.category
                 ).subscribe(() => {
                   loadingEl.dismiss();
                   this.form.reset();
@@ -278,11 +256,12 @@ export class RecipeEditPage implements OnInit, OnDestroy {
                       return this.recipesService.updateRecipe(
                         this.recipeId,
                         formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
-                        ingsForRecipe,
-                        formData.calories,
+                        formData.instructions,
                         url,
-                        formData.category,
-                        formData.instructions
+                        ingsForRecipe,
+                        nutrition,
+                        false,
+                        formData.category
                       );
                     })).subscribe();
                   })).subscribe(() => {
@@ -307,7 +286,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
       ]
     }).then(alertEl => {
       alertEl.present();
-    }); */
+    });
   }
 
   checkAmounts() {
@@ -320,25 +299,46 @@ export class RecipeEditPage implements OnInit, OnDestroy {
     return true;
   }
 
-  calculateCalories() {
+  calculateNutrition() {
     let kcal = 0;
+    let tf = 0;
+    let sf = 0;
+    let tc = 0;
+    let sug = 0;
+    let prot = 0;
     // tslint:disable-next-line:prefer-for-of
     for (let index = 0; index < this.recipeIngredients.length; index++) {
       if (!this.recipeIngredients[index].amount || this.recipeIngredients[index].amount === 0) {
         continue;
       } else {
-        if (this.recipeIngredients[index].measurementUnit === '100g' || this.recipeIngredients[index].measurementUnit === '100ml') {
+        if (this.recipeIngredients[index].measurementUnit['perName'] === '100g' || this.recipeIngredients[index].measurementUnit['perName'] === '100ml') {
           kcal += (this.recipeIngredients[index].nutrition.calories / 100) * this.recipeIngredients[index].amount;
+          tf += (this.recipeIngredients[index].nutrition.totalFats / 100) * this.recipeIngredients[index].amount;
+          sf += (this.recipeIngredients[index].nutrition.saturatedFats / 100) * this.recipeIngredients[index].amount;
+          tc += (this.recipeIngredients[index].nutrition.totalCarbohydrates / 100) * this.recipeIngredients[index].amount;
+          sug += (this.recipeIngredients[index].nutrition.sugar / 100) * this.recipeIngredients[index].amount;
+          prot += (this.recipeIngredients[index].nutrition.proteine / 100) * this.recipeIngredients[index].amount;
         } else {
           kcal += this.recipeIngredients[index].nutrition.calories * this.recipeIngredients[index].amount;
+          tf += this.recipeIngredients[index].nutrition.totalFats * this.recipeIngredients[index].amount;
+          sf += this.recipeIngredients[index].nutrition.saturatedFats * this.recipeIngredients[index].amount;
+          tc += this.recipeIngredients[index].nutrition.totalCarbohydrates * this.recipeIngredients[index].amount;
+          sug += this.recipeIngredients[index].nutrition.sugar * this.recipeIngredients[index].amount;
+          prot += this.recipeIngredients[index].nutrition.proteine * this.recipeIngredients[index].amount;
         }
       }
     }
-    if (kcal !== 0) {
+    /* if (kcal !== 0) {
       this.form.get('calories').setValue(Math.round((kcal + Number.EPSILON) * 100) / 100);
     } else {
       this.form.get('calories').setValue(null);
-    }
+    } */
+    this.form.get('calories').setValue(Math.round((kcal + Number.EPSILON) * 100) / 100);
+    this.form.get('totalFats').setValue(Math.round((tf + Number.EPSILON) * 100) / 100);
+    this.form.get('saturatedFats').setValue(Math.round((sf + Number.EPSILON) * 100) / 100);
+    this.form.get('totalCarbohydrates').setValue(Math.round((tc + Number.EPSILON) * 100) / 100);
+    this.form.get('sugar').setValue(Math.round((sug + Number.EPSILON) * 100) / 100);
+    this.form.get('proteine').setValue(Math.round((prot + Number.EPSILON) * 100) / 100);
   }
 
   onImagePicked(imageData: string | File) {

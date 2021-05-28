@@ -71,8 +71,8 @@ export class RecipesPage implements OnInit, OnDestroy {
     }
   }
 
-  addToShoppingList(recipeId: string) {
-    this.alertCtrl.create({
+  addToShoppingList(recipeId: string) { // change
+    /* this.alertCtrl.create({
       header: 'Add to Shopping List?',
       message: 'Do you really want to add recipe ingredients to the shopping list?',
       buttons: [
@@ -94,7 +94,7 @@ export class RecipesPage implements OnInit, OnDestroy {
               for (let index = 0; index < ingredients.length; index++) {
                 ingForSl.push({
                   amount: ingredients[index].amount,
-                  ingredientsId: ingredients[index].ingredientId,
+                  ingredientsId: ingredients[index].ingredient,
                   checked: false
                 });
               }
@@ -131,11 +131,11 @@ export class RecipesPage implements OnInit, OnDestroy {
       ]
     }).then(alertEl => {
       alertEl.present();
-    });
+    }); */
   }
 
-  /* addCalories(recipeId: string) {        //change
-    const calorieDay: DailyNutrition = new DailyNutrition(null, null);
+  addCalories(recipeId: string) {        //change
+    /* const calorieDay: DailyNutrition = new DailyNutrition(null, null);
     let dailyNutrition: DailyNutrition[] = [];
     this.alertCtrl.create({
       header: 'Add to Eaten Calories?',
@@ -203,33 +203,37 @@ export class RecipesPage implements OnInit, OnDestroy {
         }]
     }).then(alertEl => {
       alertEl.present();
-    });
-  } */
+    });*/
+  }
 
   onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
     this.authService.user.pipe(take(1)).subscribe(user => {
       if (event.detail.value === 'myRecipes') {
         this.filteredRecipes = this.loadedRecipes.filter(recipe => user.id);
       } else if (event.detail.value === 'chicken') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'chicken');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'chicken');
+      } else if (event.detail.value === 'vegan') {
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'vegan');
+      } else if (event.detail.value === 'burger') {
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'burger');
       } else if (event.detail.value === 'fish') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'fish');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'fish');
       } else if (event.detail.value === 'pork') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'pork');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'pork');
       } else if (event.detail.value === 'beef') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'beef');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'beef');
       } else if (event.detail.value === 'salad') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'salad');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'salad');
       } else if (event.detail.value === 'pasta') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'pasta');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'pasta');
       } else if (event.detail.value === 'vegetables') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'vegetables');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'vegetables');
       } else if (event.detail.value === 'desert') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'desert');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'desert');
       } else if (event.detail.value === 'soup') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'soup');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'soup');
       } else if (event.detail.value === 'other') {
-        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category === 'other');
+        this.filteredRecipes = this.loadedRecipes.filter(recipe => recipe.category['name'] === 'other');
       } else {
         this.filteredRecipes = this.loadedRecipes;
       }

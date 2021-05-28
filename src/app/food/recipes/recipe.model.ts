@@ -5,7 +5,7 @@ export class Recipe {
         public name: string,
         public instructions: string,
         public image: string,
-        public ingredients: {ingredientId: string, amount: number}[],
+        public ingredients: {ingredient: string, amount: number}[],
         public nutrition: Nutrition,
         public reviewRequested: boolean,
         public isPublic: boolean,

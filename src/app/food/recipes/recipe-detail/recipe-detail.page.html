@@ -10,9 +10,9 @@
       </ion-button>
     </ion-buttons>
     <ion-buttons slot="end">
-    <ion-button (click)="onDeleteRecipe()" color="danger">
-      <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-    </ion-button>
+      <ion-button (click)="onDeleteRecipe()" color="danger">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -44,10 +44,12 @@
             <ion-label>
               {{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}
             </ion-label>
-            <ion-text *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'">
-              {{ ingredient.amount }} {{ ingredient.measurementUnit | slice:3 }} </ion-text>
-            <ion-text *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'">
-              {{ ingredient.amount }} {{ ingredient.measurementUnit }} </ion-text>
+            <ion-text
+              *ngIf="ingredient.measurementUnit['perName']==='100g' || ingredient.measurementUnit['perName']==='100ml'">
+              {{ ingredient.amount }} {{ ingredient.measurementUnit['perName'] | slice:3 }} </ion-text>
+            <ion-text
+              *ngIf="ingredient.measurementUnit['perName']!=='100g' && ingredient.measurementUnit['perName']!=='100ml'">
+              {{ ingredient.amount }} {{ ingredient.measurementUnit['perName'] }} </ion-text>
           </ion-item>
         </ion-list>
       </ion-col>
@@ -55,22 +57,89 @@
     <ion-row>
       <ion-col size="6" size-lg="3" offset-lg="3" size-md="4" offset-md="2" size-sm="5" offset-sm="1">
         <p style="font-size: large; font-style: oblique; margin-left: 10%;" class="ion-text-center box-bordered ">
-          Category: {{ recipe.category.toLowerCase().charAt(0).toUpperCase() + recipe.category.toLowerCase().slice(1) }}
+          Category: {{ recipe.category['name'].toLowerCase().charAt(0).toUpperCase() +
+          recipe.category['name'].toLowerCase().slice(1) }}
         </p>
       </ion-col>
       <ion-col size="6" size-lg="3" size-md="4" size-sm="5">
         <p style="font-size: large; font-style: oblique; margin-right: 10%;" class="ion-text-center box-bordered ">
-          Calories: {{ recipe.calories }}kcal</p>
+          Calories: {{ recipe.nutrition.calories }}kcal</p>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
-        <ion-button color="primary" expand="block" class="ion-padding" (click)="addToShoppingList()">Add Ingredients to Shopping List</ion-button>
+        <ion-item>
+          <ion-grid style="border: 2px solid; border-radius: 10px;">
+            <ion-row style="font-size: x-large; margin-bottom: 15px;">
+              <ion-col>
+                Nutrition
+              </ion-col>
+              <ion-col style="text-align: end;">
+                per serving
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Calories
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.calories + ' kcal' }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Total Fats
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.totalFats + ' g' }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Saturated Fats
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.saturatedFats + ' g' }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Total Carbohydrates
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.totalCarbohydrates + ' g' }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Sugar
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.sugar + ' g' }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                Proteine
+              </ion-col>
+              <ion-col style="text-align: end;">
+                {{ recipe.nutrition.proteine + ' g' }}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
-        <ion-button color="primary" fill="outline" expand="block" class="ion-padding" (click)="addCalories()">Add Calories to Todays Calorie Count</ion-button>
+        <ion-button color="primary" expand="block" class="ion-padding" (click)="addToShoppingList()">Add Ingredients to
+          Shopping List</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-button color="primary" fill="outline" expand="block" class="ion-padding" (click)="addCalories()">Add
+          Calories to Todays Calorie Count</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

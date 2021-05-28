@@ -5,7 +5,8 @@
     </ion-buttons>
     <ion-title>{{ recipe?.name }}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)="onUpdateRecipe()" color="secondary" [disabled]="!form?.valid || !recipeIngredients || recipeIngredients.length <= 0 || !checkAmounts() || !form.get('image').value">
+      <ion-button (click)="onUpdateRecipe()" color="secondary"
+        [disabled]="!form?.valid || !recipeIngredients || recipeIngredients.length <= 0 || !checkAmounts() || !form.get('image').value">
         <ion-icon name="checkbox" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -30,7 +31,7 @@
           <app-image-picker (imagePick)="onImagePicked($event)" *ngIf="showPicker"></app-image-picker>
         </ion-col>
         <ion-col size="8" offset="2" size-lg="2" offset-lg="5" size-md="4" offset-md="4" size-sm="6" offset-sm="3">
-          <ion-button color="danger" fill="outline" *ngIf="!showPicker" expand="block" (click)="onChangeImage()" >
+          <ion-button color="danger" fill="outline" *ngIf="!showPicker" expand="block" (click)="onChangeImage()">
             <ion-icon name="trash" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-col>
@@ -48,16 +49,18 @@
           <ion-item>
             <ion-label position="floating">Category</ion-label>
             <ion-select interface="alert" formControlName="category">
-              <ion-select-option value="chicken">Chicken</ion-select-option>
-              <ion-select-option value="fish">Fish</ion-select-option>
-              <ion-select-option value="pork">Pork</ion-select-option>
-              <ion-select-option value="beef">Beef</ion-select-option>
-              <ion-select-option value="salad">Salad</ion-select-option>
-              <ion-select-option value="pasta">Pasta</ion-select-option>
-              <ion-select-option value="vegetables">Vegetables</ion-select-option>
-              <ion-select-option value="desert">Desert</ion-select-option>
-              <ion-select-option value="soup">Soup</ion-select-option>
-              <ion-select-option value="other">Other</ion-select-option>
+              <ion-select-option value="605f7ec2a2d8979ad183abdc">Chicken</ion-select-option>
+              <ion-select-option value="605f7ea7a2d8979ad183abdb">Vegan</ion-select-option>
+              <ion-select-option value="605f7e7da2d8979ad183abda">Burger</ion-select-option>
+              <ion-select-option value="60b009291655f412a9aea581">Fish</ion-select-option>
+              <ion-select-option value="60b0094c1655f412a9aea582">Pork</ion-select-option>
+              <ion-select-option value="605f7eeba2d8979ad183abde">Beef</ion-select-option>
+              <ion-select-option value="605f7edca2d8979ad183abdd">Salad</ion-select-option>
+              <ion-select-option value="605f7dfbd3895604b0df2be4">Pasta</ion-select-option>
+              <ion-select-option value="60b0097e1655f412a9aea583">Vegetables</ion-select-option>
+              <ion-select-option value="60b0099b1655f412a9aea584">Desert</ion-select-option>
+              <ion-select-option value="60b009ab1655f412a9aea585">Soup</ion-select-option>
+              <ion-select-option value="60b009ba1655f412a9aea586">Other</ion-select-option>
             </ion-select>
           </ion-item>
         </ion-col>
@@ -72,9 +75,113 @@
       </ion-row>
       <ion-row>
         <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
-          <ion-item>
+          <ion-item hidden>
             <ion-label position="floating">Calories (calculated automatically)</ion-label>
-            <ion-input formControlName="calories" type="number" readonly></ion-input>
+            <ion-input formControlName="calories" type="number" readonly #caloriesInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item hidden>
+            <ion-label position="floating">Total Fats (calculated automatically)</ion-label>
+            <ion-input formControlName="totalFats" type="number" readonly #totalFatsInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item hidden>
+            <ion-label position="floating">Saturated Fats (calculated automatically)</ion-label>
+            <ion-input formControlName="saturatedFats" type="number" readonly #saturatedFatsInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item hidden>
+            <ion-label position="floating">Total Carbohydrates (calculated automatically)</ion-label>
+            <ion-input formControlName="totalCarbohydrates" type="number" readonly #totalCarbohydratesInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item hidden>
+            <ion-label position="floating">Sugar (calculated automatically)</ion-label>
+            <ion-input formControlName="sugar" type="number" readonly #sugarInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item hidden>
+            <ion-label position="floating">Proteine (calculated automatically)</ion-label>
+            <ion-input formControlName="proteine" type="number" readonly #proteineInput></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-grid style="border: 2px solid; border-radius: 10px;">
+              <ion-row style="font-size: x-large; margin-bottom: 15px;">
+                <ion-col>
+                  Nutrition
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  per serving
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Calories
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ caloriesInput.value + ' kcal' }}
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Total Fats
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ totalFatsInput.value + ' g' }}
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Saturated Fats
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ saturatedFatsInput.value + ' g' }}
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Total Carbohydrates
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ totalCarbohydratesInput.value + ' g' }}
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Sugar
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ sugarInput.value + ' g' }}
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  Proteine
+                </ion-col>
+                <ion-col style="text-align: end;">
+                  {{ proteineInput.value + ' g' }}
+                </ion-col>
+              </ion-row>
+            </ion-grid>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -96,22 +203,31 @@
               </ion-button>
             </ion-item> -->
             <ion-item lines="full" *ngFor="let ingredient of recipeIngredients">
-                <ion-avatar slot="start">
-                  <ion-img [src]="ingredient.image"></ion-img>
-                </ion-avatar>
+              <ion-avatar slot="start">
+                <ion-img [src]="ingredient.image"></ion-img>
+              </ion-avatar>
               <ion-col size="5">
                 <ion-label>
-                  <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
-                  <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+                  <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1)
+                    }}</h5>
+                  <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{
+                    ingredient.measurementUnit['perName'] }}</p>
                 </ion-label>
               </ion-col>
               <ion-col size="3">
-                <ion-input value="{{ingredient.amount}}" placeholder="amount" required type="number" class="input-box" style="text-align: center;"
-                name="amount" (ionChange)="amountEntered($event.detail.value, ingredient.id)"></ion-input>
+                <ion-input value="{{ingredient.amount}}" placeholder="amount" required type="number" class="input-box"
+                  style="text-align: center;" name="amount"
+                  (ionChange)="amountEntered($event.detail.value, ingredient.id)"></ion-input>
               </ion-col>
               <ion-col size="2">
-                <p *ngIf="ingredient.measurementUnit==='100g' || ingredient.measurementUnit==='100ml'"> {{ ingredient.measurementUnit | slice:3 }} </p>
-                <p *ngIf="ingredient.measurementUnit!=='100g' && ingredient.measurementUnit!=='100ml'"> {{ ingredient.measurementUnit }} </p>
+                <p
+                  *ngIf="ingredient.measurementUnit['perName']==='100g' || ingredient.measurementUnit['perName']==='100ml'">
+                  {{
+                  ingredient.measurementUnit['perName'] | slice:3 }} </p>
+                <p
+                  *ngIf="ingredient.measurementUnit['perName']!=='100g' && ingredient.measurementUnit['perName']!=='100ml'">
+                  {{
+                  ingredient.measurementUnit['perName'] }} </p>
               </ion-col>
               <ion-col size="2">
                 <ion-buttons>
@@ -126,7 +242,9 @@
       </ion-row>
       <ion-row>
         <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
-          <ion-searchbar #search placeholder="Search Ingredients to Add" showCancelButton="focus" color="secondary" animated inputmode="text" spellcheck="true" (ionChange)="onFindIngredients($event.target.value)"></ion-searchbar>
+          <ion-searchbar #search placeholder="Search Ingredients to Add" showCancelButton="focus" color="secondary"
+            animated inputmode="text" spellcheck="true" (ionChange)="onFindIngredients($event.target.value)">
+          </ion-searchbar>
         </ion-col>
       </ion-row>
       <ion-row>
@@ -137,8 +255,10 @@
                 <ion-img [src]="ingredient.image"></ion-img>
               </ion-avatar>
               <ion-label>
-                <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}</h5>
-                <p>{{ ingredient.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit }}</p>
+                <h5>{{ ingredient.name.toLowerCase().charAt(0).toUpperCase() + ingredient.name.toLowerCase().slice(1) }}
+                </h5>
+                <p>{{ ingredient.nutrition.calories | number: '1.0-2' }} kcal / {{ ingredient.measurementUnit['perName']
+                  }}</p>
               </ion-label>
               <ion-button color="secondary" (click)="addToRecipeIngredients(ingredient.id)">Add</ion-button>
             </ion-item>

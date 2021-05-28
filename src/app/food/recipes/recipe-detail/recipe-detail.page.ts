@@ -52,7 +52,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
         // tslint:disable-next-line:prefer-for-of
         for (let index = 0; index < rec.ingredients.length; index++) {
           const element = rec.ingredients[index];
-          this.ingSub = this.ingredientsService.getIngredient(rec.ingredients[index].ingredientId)
+          this.ingSub = this.ingredientsService.getIngredient(rec.ingredients[index].ingredient['id'])
             .pipe(take(1)).subscribe(ing => {
               ing.amount = rec.ingredients[index].amount;
               this.ingredients.push(ing);
@@ -118,7 +118,7 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
   }
 
   addToShoppingList() {
-    this.alertCtrl.create({
+    /* this.alertCtrl.create({
       header: 'Add to Shopping List?',
       message: 'Do you really want to add recipe ingredients to the shopping list?',
       buttons: [
@@ -176,10 +176,11 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
       ]
     }).then(alertEl => {
       alertEl.present();
-    });
+    }); */
   }
 
-  /* addCalories() {    //change
+  addCalories() {    //change
+    /*
     const calorieDay: DailyNutrition = new DailyNutrition(null, null);
     let dailyNutrition: DailyNutrition[] = [];
     this.alertCtrl.create({
@@ -246,7 +247,8 @@ export class RecipeDetailPage implements OnInit, OnDestroy {
     }).then(alertEl => {
       alertEl.present();
     });
-  } */
+    */
+  }
 
   ngOnDestroy() {
     if (this.recSub) {
