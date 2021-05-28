@@ -1,3 +1,4 @@
+import { Nutrition } from './../shared/nutrition.modal';
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../auth/user.model';
@@ -28,11 +29,11 @@ export class MyAccountPage implements OnInit, OnDestroy {
   editedUser: User;
   authSub: Subscription;
   isLoading = false;
-  /* form: FormGroup; */
   date: ISODateString;
   @ViewChild('f') form: NgForm;
   suggestedCalories: number;
   editMode = false;
+  displayingData: string = 'calories';
 
   chartData: ChartDataSets[] = [{ data: null, label: null }];
   chartLabels: Label[];
@@ -75,130 +76,33 @@ export class MyAccountPage implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  /* initForm() {
-    this.isLoading = true;
-    this.form = new FormGroup({
-      firstName: new FormControl(this.user.firstName, {
-        updateOn: 'blur',
-        validators: [Validators.required]
-      }),
-      lastName: new FormControl(this.user.lastName, {
-        updateOn: 'blur',
-        validators: [Validators.required]
-      }),
-      gender: new FormControl(this.user.gender, {
-        updateOn: 'blur',
-        validators: [Validators.required]
-      }),
-      dateOfBirth: new FormControl(this.user.dateOfBirth.toISOString(), {
-        updateOn: 'blur',
-        validators: [Validators.required]
-      }),
-      weight: new FormControl(this.user.weight, {
-        updateOn: 'blur',
-        validators: [Validators.required, Validators.min(10)]
-      }),
-      height: new FormControl(this.user.height, {
-        updateOn: 'blur',
-        validators: [Validators.required, Validators.min(10)]
-      }),
-      maxCalories: new FormControl(this.user.maxCalories, {
-        updateOn: 'blur',
-        validators: [Validators.required, Validators.min(1)]
-      })
-    });
-    this.isLoading = false;
-  } */
-
   ionViewWillEnter() { // bilo je didEnter, ovako deluje da bolje radi
     this.isLoading = true;
-    setTimeout(() => {
-      this.authSub = this.authService.user.subscribe((activeUser) => {
-        if (!activeUser) {
-          return;
-        }
-        this.user = activeUser;
-        this.editedUser = new User(
-          this.user.id,
-          this.user.email,
-          this.user.firstName,
-          this.user.lastName,
-          this.user.gender,
-          this.user.dateOfBirth,
-          this.user.weight,
-          this.user.height,
-          this.user.maxCalories,
-          this.user.dailyNutrition,
-          this.user.shoppingList,
-          this.user.userToken,
-          this.user.tokenExpirationDate
-        );
-        this.date = new Date(this.editedUser.dateOfBirth).toISOString();
-        this.calculateCalories();
-        /* if (
-          !activeUser.dateOfBirth ||
-          !activeUser.firstName ||
-          !activeUser.gender ||
-          !activeUser.height ||
-          !activeUser.lastName ||
-          !activeUser.maxCalories ||
-          !activeUser.weight
-        ) {
-          this.modalCtrl
-            .create({ component: UserDataComponent })
-            .then((modalEl) => {
-              modalEl.present();
-              return modalEl.onDidDismiss();
-            })
-            .then((resultData) => {
-              if (resultData.role === 'confirm') {
-                this.loadingCtrl
-                  .create({
-                    keyboardClose: true,
-                    message: 'Saving user data...',
-                  })
-                  .then((loadingEl) => {
-                    loadingEl.present();
-                    const data = resultData.data.userData;
-                    this.authService
-                      .postUserData(
-                        data.firstName,
-                        data.lastName,
-                        data.gender,
-                        data.dateOfBirth,
-                        data.weight,
-                        data.height,
-                        data.maxCalories
-                      ).subscribe(() => {
-                        this.user.firstName = data.firstName;
-                        this.user.lastName = data.lastName;
-                        this.user.gender = data.gender;
-                        this.user.dateOfBirth = data.dateOfBirth;
-                        this.user.weight = data.weight;
-                        this.user.height = data.height;
-                        this.user.maxCalories = data.maxCalories;
-                        loadingEl.dismiss();
-                        this.toastCtrl.create({
-                          message: 'Data saved!',
-                          duration: 2000,
-                          cssClass: 'toastClass'
-                        }).then(toastEl => {
-                          toastEl.present();
-                        });
-                      });
-                  });
-              } else {
-                this.router.navigateByUrl('/food/tabs/recipes');
-              }
-              this.setChartData();
-              this.isLoading = false;
-            });
-        } else { */
-        this.setChartData();
-        this.isLoading = false;
-        /* } */
-      });
-    }, 1000);
+    this.authSub = this.authService.user.subscribe((activeUser) => {
+      if (!activeUser) {
+        return;
+      }
+      this.user = activeUser;
+      this.editedUser = new User(
+        this.user.id,
+        this.user.email,
+        this.user.firstName,
+        this.user.lastName,
+        this.user.gender,
+        this.user.dateOfBirth,
+        this.user.weight,
+        this.user.height,
+        this.user.maxCalories,
+        this.user.dailyNutrition,
+        this.user.shoppingList,
+        this.user.userToken,
+        this.user.tokenExpirationDate
+      );
+      this.date = new Date(this.editedUser.dateOfBirth).toISOString();
+      this.calculateCalories();
+      this.setChartData();
+      this.isLoading = false;
+    });
   }
 
   onUpdateUserData() {
@@ -227,8 +131,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
     // updated user je novi ?? nzm da l ovo mora posto ima subscribe za usera
   }
 
-  updateUserData() {      // change
-    /* this.loadingCtrl.create({
+  updateUserData() {
+    this.loadingCtrl.create({
       keyboardClose: true,
       message: 'Saving changes...'
     }).then(loadingEl => {
@@ -240,8 +144,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
         this.form.value['date-of-birth'],
         this.form.value['user-weight'],
         this.form.value['user-height'],
-        this.form.value['max-calories'],
-        this.user.dailyNutrition
+        this.form.value['max-calories']
       ).subscribe(() => {
         loadingEl.dismiss();
         if (this.editMode) {
@@ -255,7 +158,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
           toastEl.present();
         });
       });
-    }); */
+    });
   }
 
   calculateCalories() {
@@ -334,8 +237,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
         const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'short', day: '2-digit' });
         const [{ value: month }, , { value: day }, , { value: year }] = dateTimeFormat.formatToParts(new Date(element.day));
         this.chartLabels.push(`${day}-${month}`);
-        this.chartData[0].data.push(element.nutrition.calories);
-        sumForAverage += element.nutrition.calories;
+        this.chartData[0].data.push(element.nutrition[this.displayingData]);
+        sumForAverage += element.nutrition[this.displayingData];
       }
 
       avg = Math.round(((sumForAverage / this.user.dailyNutrition.length) + Number.EPSILON) * 100) / 100;
@@ -378,7 +281,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
       responsive: true,
       title: {
         display: true,
-        text: 'Daily Calories (Avg. ' + avg + ')'
+        text: 'Daily ' + this.displayingData.toLowerCase().charAt(0).toUpperCase() + this.displayingData.toLowerCase().slice(1) + ' (Avg. ' + avg + ')'
       },
       pan: {
         enabled: true,
@@ -393,8 +296,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
           display: true,
           ticks: {
             beginAtZero: true,
-            stepSize: 500,
-            suggestedMax: this.user.maxCalories + 1000
+            stepSize:  this.displayingData === 'calories' ? 500 : 50,
+            suggestedMax: this.displayingData === 'calories' ? this.user.maxCalories + 1000 : 300
           }
         }]
       }
@@ -452,10 +355,7 @@ export class MyAccountPage implements OnInit, OnDestroy {
     };
   }
 
-  onAddCalories() {    // change
-    /*
-    const calorieDay: DailyNutrition = new DailyNutrition(null, null);
-    let dailyNutrition: DailyNutrition[] = [];
+  onAddCalories() {
     this.alertCtrl.create({
       header: 'Add Calories',
       inputs: [
@@ -481,37 +381,8 @@ export class MyAccountPage implements OnInit, OnDestroy {
                 message: 'Adding calories...'
               }).then(loadingEl => {
                 loadingEl.present();
-                if (this.user.dailyNutrition) {
-                  dailyNutrition = this.user.dailyNutrition;
-                }
-                if (!dailyNutrition || dailyNutrition.length <= 0) {
-                  calorieDay.day = new Date();
-                  calorieDay.day.setHours(0, 0, 0, 0);
-                  calorieDay.calories = Math.round((+data.calories + Number.EPSILON) * 100) / 100;
-                  dailyNutrition.push(calorieDay);
-                  console.log('adding new because empty');
-                } else {
-                  const maxDate = new Date(Math.max.apply(Math, dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
-                  const objLatest = dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
-                  maxDate.setHours(0, 0, 0, 0);
-                  const now = new Date();
-                  now.setHours(0, 0, 0, 0);
-                  if (maxDate.getTime() === now.getTime()) {
-                    calorieDay.day = maxDate;
-                    calorieDay.calories = Math.round((objLatest.calories + +data.calories + Number.EPSILON) * 100) / 100;
-                    dailyNutrition = dailyNutrition.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
-                    dailyNutrition.push(calorieDay);
-                    console.log('adding to existing');
-                  } else {
-                    const newDate = new Date();
-                    newDate.setHours(0, 0, 0, 0);
-                    calorieDay.day = newDate;
-                    calorieDay.calories = Math.round((+data.calories + Number.EPSILON) * 100) / 100;
-                    dailyNutrition.push(calorieDay);
-                    console.log('adding new standard');
-                  }
-                }
-                this.authService.updateDailyNutrition(dailyNutrition).pipe(take(1)).subscribe(() => {
+                const nutrition = new Nutrition(+data.calories, 0, 0, 0, 0, 0);
+                this.authService.updateDailyNutrition(nutrition).pipe(take(1)).subscribe(() => {
                   loadingEl.dismiss();
                   this.toastCtrl.create({
                     message: 'Calories added successfuly!',
@@ -529,19 +400,19 @@ export class MyAccountPage implements OnInit, OnDestroy {
     }).then(alertEl => {
       alertEl.present();
     });
-  } */
-
-    /* calculateCalories() {
-      const dateOfBirth = new Date(this.form.value.dateOfBirth);
-      const ageDifMs = new Date().getTime() - dateOfBirth.getTime();
-      const ageDate = new Date(ageDifMs);
-      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-      if (this.form.value.gender === 'male') {
-        this.suggestedCalories = Math.round(66.47 + (13.75 * this.form.value.weight) + (5.0 * this.form.value.height - (6.75 * age)));
-      } else if (this.form.value.gender === 'female') {
-        this.suggestedCalories = Math.round(665.09 + (9.56 * this.form.value.weight) + (1.84 * this.form.value.height - (4.67 * age)));
-      }*/
   }
+
+  /* calculateCalories() {
+    const dateOfBirth = new Date(this.form.value.dateOfBirth);
+    const ageDifMs = new Date().getTime() - dateOfBirth.getTime();
+    const ageDate = new Date(ageDifMs);
+    const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+    if (this.form.value.gender === 'male') {
+      this.suggestedCalories = Math.round(66.47 + (13.75 * this.form.value.weight) + (5.0 * this.form.value.height - (6.75 * age)));
+    } else if (this.form.value.gender === 'female') {
+      this.suggestedCalories = Math.round(665.09 + (9.56 * this.form.value.weight) + (1.84 * this.form.value.height - (4.67 * age)));
+    }*/
+
 
   ionViewWillLeave() {
     if (this.editMode) {

@@ -1,3 +1,4 @@
+import { ShoppingList } from './../shopping-list/shopping-list.model';
 import { DailyNutrition } from '../my-account/daily-nutrition.model';
 
 export class User {
@@ -12,10 +13,10 @@ export class User {
         public height: number,
         public maxCalories: number,
         public dailyNutrition: DailyNutrition[],
-        public shoppingList: any,       // change
+        public shoppingList: ShoppingList,
         public token: string,
         public tokenExpirationDate: Date
-    ) {}
+    ) { }
 
     get userToken() {
         if (!this.tokenExpirationDate || this.tokenExpirationDate <= new Date()) {

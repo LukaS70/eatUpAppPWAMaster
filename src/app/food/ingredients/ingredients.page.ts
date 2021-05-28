@@ -70,7 +70,7 @@ export class IngredientsPage implements OnInit, OnDestroy {
             }).then(loadingEl => {
               loadingEl.present();
               this.ingredientsService.deleteIngredient(ingredientId).subscribe(() => {
-                this.storage.storage.refFromURL(ingredientImage).delete();
+                /* this.storage.storage.refFromURL(ingredientImage).delete(); */
                 loadingEl.dismiss();
                 this.toastCtrl.create({
                   message: 'Ingredient deleted successfully!',

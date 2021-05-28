@@ -1,3 +1,4 @@
+import { Nutrition } from './../../shared/nutrition.modal';
 import { take, switchMap, map } from 'rxjs/operators';
 import { AuthService } from './../../auth/auth.service';
 import { RecipesService } from './recipes.service';
@@ -130,9 +131,7 @@ export class RecipesPage implements OnInit, OnDestroy {
     });
   }
 
-  addCalories(recipeId: string) {        //change
-    /* const calorieDay: DailyNutrition = new DailyNutrition(null, null);
-    let dailyNutrition: DailyNutrition[] = [];
+  addCalories(recipeId: string) {
     this.alertCtrl.create({
       header: 'Add to Eaten Calories?',
       message: 'Do you really want to add recipe calories to todays clories count?',
@@ -149,57 +148,32 @@ export class RecipesPage implements OnInit, OnDestroy {
               message: 'Adding calories...'
             }).then(loadingEl => {
               loadingEl.present();
-              this.authService.user.pipe(take(1), switchMap(user => {
-                if (user.dailyNutrition) {
-                  dailyNutrition = user.dailyNutrition;
-                }
-                if (!dailyNutrition || dailyNutrition.length <= 0) {
-                  calorieDay.day = new Date();
-                  calorieDay.day.setHours(0, 0, 0, 0);
-                  calorieDay.calories = Math.round((this.loadedRecipes.find(rec => rec.id === recipeId).calories
-                    + Number.EPSILON) * 100) / 100;
-                  dailyNutrition.push(calorieDay);
-                  console.log('adding new because empty');
-                } else {
-                  const maxDate = new Date(Math.max.apply(Math, dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
-                  const objLatest = dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
-                  maxDate.setHours(0, 0, 0, 0);
-                  const now = new Date();
-                  now.setHours(0, 0, 0, 0);
-                  if (maxDate.getTime() === now.getTime()) {
-                    calorieDay.day = maxDate;
-                    calorieDay.calories = Math.round((objLatest.calories + this.loadedRecipes.find(rec => rec.id === recipeId).calories
-                      + Number.EPSILON) * 100) / 100;
-                    dailyNutrition = dailyNutrition.filter((o) => new Date(o.day).getTime() !== maxDate.getTime());
-                    dailyNutrition.push(calorieDay);
-                    console.log('adding to existing');
-                  } else {
-                    const newDate = new Date();
-                    newDate.setHours(0, 0, 0, 0);
-                    calorieDay.day = newDate;
-                    calorieDay.calories = Math.round((this.loadedRecipes.find(rec => rec.id === recipeId).calories
-                      + Number.EPSILON) * 100) / 100;
-                    dailyNutrition.push(calorieDay);
-                    console.log('adding new standard');
-                  }
-                }
-                return this.authService.updateDailyNutrition(dailyNutrition);
-              })).subscribe(() => {
-                loadingEl.dismiss();
-                this.toastCtrl.create({
-                  message: 'Calories added successfuly!',
-                  duration: 2000,
-                  cssClass: 'toastClass'
-                }).then(toastEl => {
-                  toastEl.present();
+              const recNutrition = this.loadedRecipes.find(rec => rec.id === recipeId).nutrition;
+              const nutrition = new Nutrition(
+                Math.round((recNutrition.calories + Number.EPSILON) * 100) / 100,
+                Math.round((recNutrition.totalFats + Number.EPSILON) * 100) / 100,
+                Math.round((recNutrition.saturatedFats + Number.EPSILON) * 100) / 100,
+                Math.round((recNutrition.totalCarbohydrates + Number.EPSILON) * 100) / 100,
+                Math.round((recNutrition.sugar + Number.EPSILON) * 100) / 100,
+                Math.round((recNutrition.proteine + Number.EPSILON) * 100) / 100
+              );
+              return this.authService.updateDailyNutrition(nutrition)
+                .subscribe(() => {
+                  loadingEl.dismiss();
+                  this.toastCtrl.create({
+                    message: 'Calories added successfuly!',
+                    duration: 2000,
+                    cssClass: 'toastClass'
+                  }).then(toastEl => {
+                    toastEl.present();
+                  });
                 });
-              });
             });
           }
         }]
     }).then(alertEl => {
       alertEl.present();
-    });*/
+    });
   }
 
   onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {

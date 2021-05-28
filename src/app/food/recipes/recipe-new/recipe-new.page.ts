@@ -8,8 +8,7 @@ import { LoadingController, AlertController, ToastController, IonSearchbar } fro
 import { Router } from '@angular/router';
 import { Ingredient } from '../../ingredients/ingredient.model';
 import { ImagePickerService } from 'src/app/shared/image-picker/image-picker.service';
-import { AngularFireStorage } from '@angular/fire/storage';
-import { finalize, take, switchMap } from 'rxjs/operators';
+import { take, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-new',
@@ -32,8 +31,7 @@ export class RecipeNewPage implements OnInit, OnDestroy {
     private router: Router,
     private toastCtrl: ToastController,
     private recipesService: RecipesService,
-    private imgService: ImagePickerService,
-    private storage: AngularFireStorage
+    private imgService: ImagePickerService
   ) { }
 
   ngOnInit() {
@@ -174,11 +172,40 @@ export class RecipeNewPage implements OnInit, OnDestroy {
               }
 
               const formData = this.form.value;
-              const filePath = `recipes/${this.form.get('name').value}-${new Date().getTime()}`;
-              const fileRef = this.storage.ref(filePath);
-              // let imgUrl;
-              console.log(this.form.value);
-              this.storage.upload(filePath, this.form.get('image').value).snapshotChanges().pipe(
+
+              this.recipesService.uploadRecipeImage(this.form.get('image').value).pipe(take(1), switchMap(url => {
+                const nutrition = new Nutrition(
+                  formData.calories,
+                  formData.totalFats,
+                  formData.saturatedFats,
+                  formData.totalCarbohydrates,
+                  formData.sugar,
+                  formData.proteine
+                );
+                return this.recipesService.addRecipes(
+                  formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
+                  formData.instructions,
+                  url['url'],
+                  ingsForRecipe,
+                  nutrition,
+                  false,
+                  formData.category
+                );
+              })).subscribe(() => {
+                loadingEl.dismiss();
+                this.form.reset();
+                this.recipeIngredients = [];
+                this.search.value = '';
+                this.router.navigate(['/food/tabs/recipes']);
+                this.toastCtrl.create({
+                  message: 'Recipe added successfully!',
+                  duration: 2000,
+                  cssClass: 'toastClass'
+                }).then(toastEl => {
+                  toastEl.present();
+                });
+              });
+              /* this.storage.upload(filePath, this.form.get('image').value).snapshotChanges().pipe(
                 finalize(() => { // ovo se poziva samo kada je upload zavrsen
                   fileRef.getDownloadURL().pipe(take(1), switchMap(url => {
                     const nutrition = new Nutrition(
@@ -212,7 +239,7 @@ export class RecipeNewPage implements OnInit, OnDestroy {
                   }).then(toastEl => {
                     toastEl.present();
                   });
-                });
+                }); */
             });
           }
         }

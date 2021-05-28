@@ -1,9 +1,11 @@
+import { ShoppingList } from './../shopping-list/shopping-list.model';
+import { Nutrition } from './../shared/nutrition.modal';
 import { DailyNutrition } from '../my-account/daily-nutrition.model';
 import { User } from './user.model';
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, from } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { tap, map, take } from 'rxjs/operators';
+import { tap, map, take, switchMap } from 'rxjs/operators';
 import { Plugins } from '@capacitor/core';
 
 export interface AuthResponseData {
@@ -22,7 +24,7 @@ export interface UserData {
   weight: number;
   maxCalories: number;
   dailyNutrition?: DailyNutrition[];
-  shoppingList?: any                  // change
+  shoppingList?: ShoppingList
 }
 @Injectable({
   providedIn: 'root'
@@ -43,10 +45,48 @@ export class AuthService implements OnDestroy {
 
   constructor(private http: HttpClient) { }
 
-  updateDailyNutrition(
-    userDailyNutrition: DailyNutrition[]
-  ) {
-    return /* this.user.pipe(take(1), switchMap(userData => {
+  updateDailyNutrition(nutrition: Nutrition) {
+    return this.user.pipe(take(1), switchMap(userData => {
+      let dailyNutrition = userData.dailyNutrition;
+      let updatedDailyNutrition: DailyNutrition[];
+      let maxDate = null;
+      let objLatest: DailyNutrition = null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (dailyNutrition && dailyNutrition.length !== 0) {
+        maxDate = new Date(Math.max.apply(Math, dailyNutrition.map((o) => new Date(o.day)))); // proveriti da l radi
+        objLatest = dailyNutrition.find((o) => new Date(o.day).getTime() === maxDate.getTime());
+        maxDate.setHours(0, 0, 0, 0);
+      }
+
+      if (maxDate && objLatest && maxDate.getTime() === today.getTime()) {
+        const objLatestIndex = dailyNutrition.findIndex(dn => dn.id === objLatest.id);
+        updatedDailyNutrition = [...dailyNutrition];
+
+        objLatest.nutrition.calories = Math.round((objLatest.nutrition.calories + nutrition.calories + Number.EPSILON) * 100) / 100;
+        objLatest.nutrition.totalFats = Math.round((objLatest.nutrition.totalFats + nutrition.totalFats + Number.EPSILON) * 100) / 100;
+        objLatest.nutrition.saturatedFats = Math.round((objLatest.nutrition.saturatedFats + nutrition.saturatedFats + Number.EPSILON) * 100) / 100;
+        objLatest.nutrition.totalCarbohydrates = Math.round((objLatest.nutrition.totalCarbohydrates + nutrition.totalCarbohydrates + Number.EPSILON) * 100) / 100;
+        objLatest.nutrition.sugar = Math.round((objLatest.nutrition.sugar + nutrition.sugar + Number.EPSILON) * 100) / 100;
+        objLatest.nutrition.proteine = Math.round((objLatest.nutrition.proteine + nutrition.proteine + Number.EPSILON) * 100) / 100;
+
+        updatedDailyNutrition[objLatestIndex] = objLatest;
+        console.log('existing');
+        console.log(updatedDailyNutrition);
+      } else {
+        updatedDailyNutrition = [...dailyNutrition];
+        let createdDailyNutrition = new DailyNutrition(
+          null,
+          today,
+          nutrition,
+          userData.id
+        );
+        updatedDailyNutrition.push(createdDailyNutrition);
+        console.log('new');
+        console.log(updatedDailyNutrition);
+      }
+
       const user = new User(
         userData.id,
         userData.email,
@@ -57,27 +97,56 @@ export class AuthService implements OnDestroy {
         userData.weight,
         userData.height,
         userData.maxCalories,
-        userDailyNutrition,
-        userData.userToken,
-        userData.tokenExpirationDate,
-        userData.refreshToken,
-        userData.userDataId
+        updatedDailyNutrition,
+        userData.shoppingList,
+        userData.token,
+        userData.tokenExpirationDate
       );
       this.user.next(user);
       console.log(user);
-      return this.http.put(`https://eatupappproject.firebaseio.com/userData/${userData.userDataId}.json`, {
-        userId: userData.id,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        gender: userData.gender,
-        dateOfBirth: userData.dateOfBirth,
-        weight: userData.weight,
-        height: userData.height,
-        maxCalories: userData.maxCalories,
-        dailyNutrition: userDailyNutrition
+      return this.http.post(`http://localhost:5000/api/daily-nutrition`, {
+        nutrition
       });
-    })); */
-    'change'
+    }));
+  }
+
+  updateUserData(
+    userFirstName: string,
+    userLastName: string,
+    userGender: string,
+    userDateOfBirth: Date,
+    userWeight: number,
+    userHeight: number,
+    userMaxCalories: number
+  ) {
+    return this.user.pipe(take(1), switchMap(userData => {
+      const user = new User(
+        userData.id,
+        userData.email,
+        userFirstName,
+        userLastName,
+        userGender,
+        userDateOfBirth,
+        userWeight,
+        userHeight,
+        userMaxCalories,
+        userData.dailyNutrition,
+        userData.shoppingList,
+        userData.token,
+        userData.tokenExpirationDate
+      );
+      this.user.next(user);
+      console.log(user);
+      return this.http.patch(`http://localhost:5000/api/users/${userData.id}`, {
+        firstName: userFirstName,
+        lastName: userLastName,
+        gender: userGender,
+        dateOfBirth: userDateOfBirth,
+        weight: userWeight,
+        height: userHeight,
+        maxCalories: userMaxCalories
+      });
+    }));
   }
 
   sigup(userEmail: string, userPassword: string, firstName: string, lastName: string, gender: string, dateOfBirth: Date, weight: number, height: number, maxCalories: number) {
@@ -149,7 +218,7 @@ export class AuthService implements OnDestroy {
       .pipe(map(usersData => {
         if (usersData) {
           console.log(usersData);
-          
+
           for (const key in usersData) {
             if (usersData.hasOwnProperty(key)) {
               user = new User(

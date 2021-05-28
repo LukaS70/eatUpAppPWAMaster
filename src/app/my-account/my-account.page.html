@@ -134,8 +134,25 @@
     </ion-grid>
   </form>
 
+  <ion-item-divider></ion-item-divider>
+
   <ion-grid
     *ngIf="!isLoading && user?.dateOfBirth && user?.firstName && user?.gender && user?.height && user?.lastName && user?.maxCalories && user?.weight && user?.dailyNutrition">
+    <ion-row>
+      <ion-col size-lg="6" offset-lg="3" size-md="8" offset-md="2" size-sm="10" offset-sm="1">
+        <ion-item>
+          <ion-label position="floating">Displaying Data</ion-label>
+          <ion-select interface="alert" [(ngModel)]="displayingData" (ngModelChange)="setChartData()">
+            <ion-select-option value="calories">Calories</ion-select-option>
+            <ion-select-option value="totalFats">Total Fats</ion-select-option>
+            <ion-select-option value="saturatedFats">Saturated Fats</ion-select-option>
+            <ion-select-option value="totalCarbohydrates">Total Carbohydrates</ion-select-option>
+            <ion-select-option value="sugar">Sugar</ion-select-option>
+            <ion-select-option value="proteine">Proteine</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
     <ion-row>
       <ion-col size-md="8" offset-md="2">
         <canvas baseChart [datasets]="chartData" [labels]="chartLabels" [chartType]="chartType" [colors]="chartColors"

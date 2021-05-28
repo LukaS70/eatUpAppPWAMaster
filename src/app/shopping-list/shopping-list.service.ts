@@ -103,18 +103,4 @@ export class ShoppingListService {
       this.appShoppingList.next(sl);
     }));
   }
-
-  deleteShoppingListItem(ingId: string) {
-    /* let fetchedUserId: string;   //change ???
-    return this.authService.user.pipe(take(1), switchMap(user => {
-      fetchedUserId = user.id;
-      return this.appShoppingList;
-    }), take(1), switchMap(loadedSl => {
-      const ingredients = loadedSl.ingredientsForShoppingList.filter(ing => ing.ingredientsId !== ingId);
-      return this.http.put(`
-      https://eatupappproject.firebaseio.com/shoppingList/${loadedSl.id}.json`,
-        { ingredients, fetchedUserId }
-      );
-    })); */
-  }
 }

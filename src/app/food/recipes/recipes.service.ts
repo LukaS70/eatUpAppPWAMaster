@@ -76,6 +76,16 @@ export class RecipesService {
       }));
   }
 
+  uploadRecipeImage(image: File) {
+    const formaData = new FormData();
+    formaData.append('image', image)
+    return this.http.post<string>(`http://localhost:5000/api/recipes/upload`, formaData)
+      .pipe(take(1), map(url => {
+        console.log(url);
+        return url;
+      }));
+  }
+
   addRecipes(
     name: string,
     instructions: string,

@@ -5,8 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ImagePickerService } from 'src/app/shared/image-picker/image-picker.service';
-import { AngularFireStorage } from '@angular/fire/storage';
-import { finalize, take, switchMap } from 'rxjs/operators';
+import { take, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ingredient-new',
@@ -22,8 +21,7 @@ export class IngredientNewPage implements OnInit {
     private alertCtrl: AlertController,
     private router: Router,
     private toastCtrl: ToastController,
-    private imgService: ImagePickerService,
-    private storage: AngularFireStorage
+    private imgService: ImagePickerService
   ) { }
 
   ngOnInit() {
@@ -91,43 +89,36 @@ export class IngredientNewPage implements OnInit {
               loadingEl.present();
 
               const formData = this.form.value;
-              const filePath = `ingredients/${this.form.get('name').value}-${new Date().getTime()}`;
-              const fileRef = this.storage.ref(filePath);
-              // let imgUrl;
-              console.log(this.form.value);
-              this.storage.upload(filePath, this.form.get('image').value).snapshotChanges().pipe(
-                finalize(() => { // ovo se poziva samo kada je upload zavrsen
-                  fileRef.getDownloadURL().pipe(take(1), switchMap(url => {
-                    const nutrition = new Nutrition(
-                      formData.calories,
-                      formData.totalFats,
-                      formData.saturatedFats,
-                      formData.totalCarbohydrates,
-                      formData.sugar,
-                      formData.proteine
-                    );
-                    console.log(nutrition);
-                    return this.ingredientsService.addIngredients(
-                      formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
-                      url,
-                      nutrition,
-                      false,  // change
-                      formData.measurementUnit,
-                      formData.category,
-                    );
-                  })).subscribe();
-                })).subscribe(() => {
-                  loadingEl.dismiss();
-                  this.form.reset();
-                  this.router.navigate(['/food/tabs/ingredients']);
-                  this.toastCtrl.create({
-                    message: 'Ingredient added successfully!',
-                    duration: 2000,
-                    cssClass: 'toastClass'
-                  }).then(toastEl => {
-                    toastEl.present();
-                  });
+
+              this.ingredientsService.uploadIngredientImage(this.form.get('image').value).pipe(take(1), switchMap(url => {
+                const nutrition = new Nutrition(
+                  formData.calories,
+                  formData.totalFats,
+                  formData.saturatedFats,
+                  formData.totalCarbohydrates,
+                  formData.sugar,
+                  formData.proteine
+                );
+                return this.ingredientsService.addIngredients(
+                  formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
+                  url['url'],
+                  nutrition,
+                  false,  
+                  formData.measurementUnit,
+                  formData.category
+                );
+              })).subscribe(() => {
+                loadingEl.dismiss();
+                this.form.reset();
+                this.router.navigate(['/food/tabs/ingredients']);
+                this.toastCtrl.create({
+                  message: 'Ingredient added successfully!',
+                  duration: 2000,
+                  cssClass: 'toastClass'
+                }).then(toastEl => {
+                  toastEl.present();
                 });
+              });
             });
           }
         }

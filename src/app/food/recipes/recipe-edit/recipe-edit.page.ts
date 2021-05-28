@@ -10,7 +10,6 @@ import { Ingredient } from '../../ingredients/ingredient.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Recipe } from '../recipe.model';
 import { ImagePickerService } from 'src/app/shared/image-picker/image-picker.service';
-import { AngularFireStorage } from '@angular/fire/storage';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -41,8 +40,7 @@ export class RecipeEditPage implements OnInit, OnDestroy {
     private recipesService: RecipesService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
-    private imgService: ImagePickerService,
-    private storage: AngularFireStorage
+    private imgService: ImagePickerService
   ) { }
 
   ngOnInit() {
@@ -245,40 +243,32 @@ export class RecipeEditPage implements OnInit, OnDestroy {
                 });
               } else {
                 const formData = this.form.value;
-                const filePath = `recipes/${this.form.get('name').value}-${new Date().getTime()}`;
-                const fileRef = this.storage.ref(filePath);
-                // let imgUrl;
-                console.log(this.form.value);
-                this.storage.upload(filePath, this.form.get('image').value).snapshotChanges().pipe(
-                  finalize(() => { // ovo se poziva samo kada je upload zavrsen
-                    fileRef.getDownloadURL().pipe(take(1), switchMap(url => {
-                      this.storage.storage.refFromURL(this.oldUrl).delete();
-                      return this.recipesService.updateRecipe(
-                        this.recipeId,
-                        formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
-                        formData.instructions,
-                        url,
-                        ingsForRecipe,
-                        nutrition,
-                        false,
-                        formData.category
-                      );
-                    })).subscribe();
-                  })).subscribe(() => {
-                    // this.storage.storage.refFromURL(this.oldUrl).delete();
-                    loadingEl.dismiss();
-                    this.form.reset();
-                    this.recipeIngredients = [];
-                    this.search.value = '';
-                    this.router.navigate(['/food/tabs/recipes']);
-                    this.toastCtrl.create({
-                      message: 'Recipe updated successfully!',
-                      duration: 2000,
-                      cssClass: 'toastClass'
-                    }).then(toastEl => {
-                      toastEl.present();
-                    });
+                this.recipesService.uploadRecipeImage(this.form.get('image').value).pipe(take(1), switchMap(url => {
+                  return this.recipesService.updateRecipe(
+                    this.recipeId,
+                    formData.name.toLowerCase().charAt(0).toUpperCase() + formData.name.toLowerCase().slice(1),
+                    formData.instructions,
+                    url['url'],
+                    ingsForRecipe,
+                    nutrition,
+                    false,
+                    formData.category
+                  );
+                })).subscribe(() => {
+                  // this.storage.storage.refFromURL(this.oldUrl).delete();
+                  loadingEl.dismiss();
+                  this.form.reset();
+                  this.recipeIngredients = [];
+                  this.search.value = '';
+                  this.router.navigate(['/food/tabs/recipes']);
+                  this.toastCtrl.create({
+                    message: 'Recipe updated successfully!',
+                    duration: 2000,
+                    cssClass: 'toastClass'
+                  }).then(toastEl => {
+                    toastEl.present();
                   });
+                });
               }
             });
           }

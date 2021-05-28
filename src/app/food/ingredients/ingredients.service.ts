@@ -81,6 +81,17 @@ export class IngredientsService {
       }));
   }
 
+  uploadIngredientImage(image: File) {
+    const formaData = new FormData();
+    formaData.append('image', image)
+    return this.http.post<string>(`http://localhost:5000/api/ingredients/upload`, formaData)
+      .pipe(take(1), map(url => {
+        console.log(url);
+        return url;
+      }));
+  }
+
+
   addIngredients(name: string, image: string, nutrition: Nutrition, reviewRequested: boolean, measurementUnit: string, category: string) {
     let generatedId: string;
     let creator: string;
